@@ -1,0 +1,8 @@
+{
+  "sourceDirs": ["path/to/src1", "path/to/src2"],
+  "testDirs": ["path/to/tst"],
+  "outputDir": "path/to/build/classes",
+  "dependencyDir": "path/to/dependency/libs",
+  "dependencies": ["dependency1", "dependency2"],
+  "tasks": {}
+}
