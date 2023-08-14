@@ -1,6 +1,6 @@
-package main.java.compiler;
+package main.compiler;
 
-import main.java.util.Logger;
+import main.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,14 +1,14 @@
-package main.java.util;
+package main.util;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-public class Logger {
+public class OutputLogger implements Logger {
 
     private PrintWriter printWriter;
 
-    public Logger(OutputStream outputStream) {
+    public OutputLogger(OutputStream outputStream) {
         this.printWriter = new PrintWriter(new OutputStreamWriter(outputStream));
     }
 

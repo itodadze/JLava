@@ -1,6 +1,6 @@
-package main.java.compiler;
+package main.compiler;
 
-import main.java.util.Logger;
+import main.util.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,10 +35,10 @@ public class FileGatherer {
             } else if (file.isFile() && file.getName().endsWith(".java")) {
                 javaFiles.add(file.getPath());
             } else if (!file.isFile()) {
-                this.logger.printLine("Non-exiting file path: %s", file.getName());
+                this.logger.printLine(Logger.FILE_PATH_NOT_FOUND + ": %s", file.getName());
             }
         } else {
-            this.logger.printLine("Null file accessed");
+            this.logger.printLine(Logger.NULL_FILE_ACCESS);
         }
         return javaFiles;
     }
