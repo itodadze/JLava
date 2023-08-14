@@ -8,9 +8,11 @@ import java.util.List;
 public class ClassCompiler {
 
     private final Logger logger;
+    private final FileGatherer fileGatherer;
 
-    public ClassCompiler(Logger logger) {
+    public ClassCompiler(Logger logger, FileGatherer fileGatherer) {
         this.logger = logger;
+        this.fileGatherer = fileGatherer;
     }
 
     public void compileClasses(List<String> sourceFiles, String outputDirectory) {
@@ -18,8 +20,9 @@ public class ClassCompiler {
         command.add("javac");
         command.add("-d");
         command.add(outputDirectory);
-        command.addAll(sourceFiles);
-
+        command.addAll(
+                fileGatherer.javaFilesFromSources(sourceFiles)
+        );
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {
             Process process = processBuilder.start();
