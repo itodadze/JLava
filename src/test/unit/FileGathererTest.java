@@ -1,7 +1,7 @@
 package unit;
 
 import main.compiler.FileGatherer;
-import main.util.Logger;
+import main.util.LogMessages;
 import org.junit.Test;
 
 import helper.StringLogger;
@@ -17,7 +17,7 @@ public class FileGathererTest {
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = new FileGatherer(logger);
         fileGatherer.javaFilesFromSources(List.of("src/test/unit/resources/file_gatherer/invalid"));
-        assertTrue(logger.getLog().startsWith(Logger.FILE_PATH_NOT_FOUND));
+        assertTrue(logger.getLog().startsWith(LogMessages.FILE_PATH_NOT_FOUND));
     }
 
     @Test

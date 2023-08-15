@@ -1,5 +1,6 @@
 package main.compiler;
 
+import main.util.LogMessages;
 import main.util.Logger;
 
 import java.util.ArrayList;
@@ -28,12 +29,12 @@ public class ClassCompiler {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                this.logger.printLine("Files compiled successfully");
+                this.logger.printLine(LogMessages.FILE_COMPILATION_SUCCESS);
             } else {
-                this.logger.printLine("Compilation error, exit code: %d", exitCode);
+                this.logger.printLine(LogMessages.FILE_COMPILATION_FAILURE + ": exit code: %d", exitCode);
             }
         } catch (Exception e) {
-            this.logger.printLine("Compilation error: %s", e.getMessage());
+            this.logger.printLine(LogMessages.FILE_COMPILATION_FAILURE + ": %s", e.getMessage());
         }
     }
 

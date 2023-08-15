@@ -1,5 +1,6 @@
 package main.compiler;
 
+import main.util.LogMessages;
 import main.util.Logger;
 
 import java.io.File;
@@ -35,10 +36,10 @@ public class FileGatherer {
             } else if (file.isFile() && file.getName().endsWith(".java")) {
                 javaFiles.add(file.getPath());
             } else if (!file.isFile()) {
-                this.logger.printLine(Logger.FILE_PATH_NOT_FOUND + ": %s", file.getName());
+                this.logger.printLine(LogMessages.FILE_PATH_NOT_FOUND + ": %s", file.getName());
             }
         } else {
-            this.logger.printLine(Logger.NULL_FILE_ACCESS);
+            this.logger.printLine(LogMessages.NULL_FILE_ACCESS);
         }
         return javaFiles;
     }
