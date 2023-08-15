@@ -4,8 +4,9 @@ import main.util.LogMessages;
 import main.util.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileGatherer {
 
@@ -16,32 +17,27 @@ public class FileGatherer {
     }
 
     public List<String> javaFilesFromSources(List<String> sourceFiles) {
-        List<String> javaFiles = new ArrayList<>();
-        for (String sourceFile: sourceFiles) {
-            javaFiles.addAll(javaFilesIn(new File(sourceFile)));
-        }
-        return javaFiles;
+        return sourceFiles.stream()
+                .map(File::new)
+                .flatMap(this::javaFilesIn)
+                .collect(Collectors.toList());
     }
 
-    private List<String> javaFilesIn(File file) {
-        List<String> javaFiles = new ArrayList<>();
-        if (file != null) {
-            if (file.isDirectory()) {
-                File[] childFiles = file.listFiles();
-                if (childFiles != null) {
-                    for (File childFile : childFiles) {
-                        javaFiles.addAll(javaFilesIn(childFile));
-                    }
-                }
-            } else if (file.isFile() && file.getName().endsWith(".java")) {
-                javaFiles.add(file.getPath());
-            } else if (!file.isFile()) {
-                this.logger.printLine(LogMessages.FILE_PATH_NOT_FOUND + ": %s", file.getName());
-            }
-        } else {
+    private Stream<String> javaFilesIn(File file) {
+        if (file == null) {
             this.logger.printLine(LogMessages.NULL_FILE_ACCESS);
+        } else if (!file.exists()) {
+            this.logger.printLine(LogMessages.FILE_PATH_NOT_FOUND + ": %s", file.getName());
+        } else {
+            if (file.isDirectory()) {
+                return Stream.ofNullable(file.listFiles())
+                        .flatMap(Stream::of)
+                        .flatMap(this::javaFilesIn);
+            } else if (file.isFile() && file.getName().endsWith(".java")) {
+                return Stream.of(file.getPath());
+            }
         }
-        return javaFiles;
+        return Stream.empty();
     }
 
 }
