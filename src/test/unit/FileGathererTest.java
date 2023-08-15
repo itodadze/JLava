@@ -32,10 +32,10 @@ public class FileGathererTest {
     }
 
     @Test
-    public void testGatherFromNotBranched() {
+    public void testGatherFromUnbranched() {
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = new FileGatherer(logger);
-        String src = "src/test/unit/resources/file_gatherer/not_branched";
+        String src = "src/test/unit/resources/file_gatherer/unbranched";
         List<String> result = fileGatherer.javaFilesFromSources(
                 List.of(src));
         assertEquals(2, result.size());
@@ -58,13 +58,13 @@ public class FileGathererTest {
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = new FileGatherer(logger);
         String branchedSrc = "src/test/unit/resources/file_gatherer/branched";
-        String notBranchedSrc = "src/test/unit/resources/file_gatherer/not_branched";
+        String unbranchedSrc = "src/test/unit/resources/file_gatherer/unbranched";
         List<String> result = fileGatherer.javaFilesFromSources(
-                List.of(branchedSrc, notBranchedSrc));
+                List.of(branchedSrc, unbranchedSrc));
         assertEquals(4, result.size());
         assertTrue(result.containsAll(List.of(
                 branchedSrc + "/Class1.java", branchedSrc + "/branch/Class2.java",
-                notBranchedSrc + "/Class1.java", notBranchedSrc + "/Class2.java"
+                unbranchedSrc + "/Class1.java", unbranchedSrc + "/Class2.java"
         )));
     }
 
