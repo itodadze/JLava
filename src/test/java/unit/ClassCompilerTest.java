@@ -65,13 +65,15 @@ public class ClassCompilerTest {
     private File[] getCompiledInnerOutputFiles(String directory, List<String> javaFiles) {
         String srcDirectory = RES_PATH + "/" + directory + "/src";
         String outputDirectory = RES_PATH + "/" + directory + "/output";
+        File outputDirFile = new File(outputDirectory);
+        outputDirFile.mkdir();
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = mock(FileGatherer.class);
 
         when(fileGatherer.javaFilesFromSources(anyList())).thenReturn(javaFiles);
         ClassCompiler compiler = new ClassCompiler(logger, fileGatherer);
         compiler.compileClasses(List.of(srcDirectory), outputDirectory);
-        return new File(outputDirectory).listFiles();
+        return outputDirFile.listFiles();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
