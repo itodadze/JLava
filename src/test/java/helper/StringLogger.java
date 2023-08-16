@@ -1,6 +1,6 @@
 package helper;
 
-import util.Logger;
+import logger.Logger;
 
 public class StringLogger implements Logger {
     private String log;

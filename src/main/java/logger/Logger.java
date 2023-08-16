@@ -1,4 +1,4 @@
-package util;
+package logger;
 
 public interface Logger {
     void printLine(String format, Object... args);

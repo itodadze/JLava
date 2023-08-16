@@ -1,11 +1,12 @@
 package unit;
 
 import compiler.FileGatherer;
-import org.junit.jupiter.api.Test;
-import util.LogMessages;
 import helper.StringLogger;
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
+import static logger.LogMessages.FILE_PATH_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,7 +18,7 @@ public class FileGathererTest {
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = new FileGatherer(logger);
         fileGatherer.javaFilesFromSources(List.of(RES_PATH + "/invalid"));
-        assertTrue(logger.getLog().startsWith(LogMessages.FILE_PATH_NOT_FOUND));
+        assertTrue(logger.getLog().startsWith(FILE_PATH_NOT_FOUND.string()));
     }
 
     @Test

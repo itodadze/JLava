@@ -1,4 +1,4 @@
-package util;
+package logger;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
