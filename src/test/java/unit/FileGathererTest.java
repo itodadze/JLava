@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileGathererTest {
-    private static final String RES_PATH = "src/test/resources/file_gatherer";
+    private static final String RES_PATH = "src/test/resources/gatherer";
 
     @Test
     public void testGatherFromInvalidSources() {

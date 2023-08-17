@@ -14,8 +14,8 @@ import static org.mockito.Mockito.*;
 
 public class ClassCompilerTest {
 
-    private static final String RES_PATH = "src/test/resources/class_compiler";
-    private static final String INNER_OUTPUT_PATH = "class_compiler";
+    private static final String RES_PATH = "src/test/resources/compiler";
+    private static final String INNER_OUTPUT_PATH = "compiler";
 
     @BeforeEach
     public void clearOutputDirectories() {
@@ -62,11 +62,12 @@ public class ClassCompilerTest {
         assertTrue((new File(outputInnerDirectory + "/dir2/Class2.class")).exists());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private File[] getCompiledInnerOutputFiles(String directory, List<String> javaFiles) {
         String srcDirectory = RES_PATH + "/" + directory + "/src";
         String outputDirectory = RES_PATH + "/" + directory + "/output";
         File outputDirFile = new File(outputDirectory);
-        outputDirFile.mkdir();
+        if (!outputDirFile.exists()) outputDirFile.mkdir();
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = mock(FileGatherer.class);
 
@@ -78,7 +79,7 @@ public class ClassCompilerTest {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void clearDirectoryContent(File directory) {
-        if (directory.exists() && directory.isDirectory()) {
+        if (directory.exists()) {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -87,6 +88,8 @@ public class ClassCompilerTest {
                     }
                     file.delete();
                 }
+            } else {
+                directory.delete();
             }
         }
     }

@@ -1,4 +1,4 @@
-package file_gatherer;
+package gatherer;
 
 public class SingleJavaClass {
 }
