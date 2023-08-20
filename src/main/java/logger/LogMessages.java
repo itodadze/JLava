@@ -6,7 +6,9 @@ public enum LogMessages {
     FILE_COMPILATION_FAILURE("File compilation error"),
     HTTP_ERROR("Http error"),
     DEPENDENCY_NOT_FOUND("Could not download dependency"),
-    DEPENDENCY_DOWNLOAD_SUCCESS("Dependency downloaded successfully");
+    DEPENDENCY_DOWNLOAD_SUCCESS("Dependency downloaded successfully"),
+    JAR_FILE_PROCESS_ERROR("Could not process jar file"),
+    JAR_FILE_CREATION_ERROR("Could not create jar file");
 
     private final String message;
 

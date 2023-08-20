@@ -15,11 +15,14 @@ import static logger.LogMessages.*;
 public class DependencyDownloader {
     private final Logger logger;
     private final RepositoryURLManager repositoryUrlManager;
+    private final DependencyResponseProcessor responseProcessor;
     private final CloseableHttpClient httpClient;
 
-    public DependencyDownloader(Logger logger, RepositoryURLManager repositoryURLManager) {
+    public DependencyDownloader(Logger logger, RepositoryURLManager repositoryURLManager,
+                                DependencyResponseProcessor responseProcessor) {
         this.logger = logger;
         this.repositoryUrlManager = repositoryURLManager;
+        this.responseProcessor = responseProcessor;
         // TODO: Authentication logic may be needed
         this.httpClient = HttpClients.createDefault();
     }
@@ -45,6 +48,7 @@ public class DependencyDownloader {
         ).findFirst();
         if (response.isPresent()) {
             this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s", dependency);
+            this.responseProcessor.process(response.get(), dependency);
         } else {
             this.logger.printLine(DEPENDENCY_NOT_FOUND.string() + ": %s", dependency);
         }
