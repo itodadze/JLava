@@ -8,7 +8,9 @@ public enum LogMessages {
     DEPENDENCY_NOT_FOUND("Could not download dependency"),
     DEPENDENCY_DOWNLOAD_SUCCESS("Dependency downloaded successfully"),
     JAR_FILE_PROCESS_ERROR("Could not process jar file"),
-    JAR_FILE_CREATION_ERROR("Could not create jar file");
+    JAR_FILE_CREATION_ERROR("Could not create jar file"),
+    DEPENDENCIES_FETCH_SUCCESS("All dependencies fetched"),
+    DEPENDENCIES_FETCH_FAILURE("Dependencies could not be fetched");
 
     private final String message;
 

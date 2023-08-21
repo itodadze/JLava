@@ -12,11 +12,11 @@ public class OutputLogger implements Logger {
         this.printWriter = new PrintWriter(new OutputStreamWriter(outputStream));
     }
 
-    public void printLine(String format, Object... args) {
+    public synchronized void printLine(String format, Object... args) {
         this.printWriter.printf(format, args);
     }
 
-    public void close() {
+    public synchronized void close() {
         if (this.printWriter != null) {
             this.printWriter.close();
             this.printWriter = null;

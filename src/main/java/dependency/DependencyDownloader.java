@@ -27,7 +27,6 @@ public class DependencyDownloader {
         this.httpClient = HttpClients.createDefault();
     }
 
-    // TODO: Cache downloaded dependencies
     public void download(String dependency) {
         List<String> repositories = this.repositoryUrlManager.getURLs();
         Optional<CloseableHttpResponse> response = repositories.stream().flatMap(
