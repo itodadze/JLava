@@ -5,7 +5,6 @@ import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +18,14 @@ public class DependencyDownloader {
     private final DependencyResponseProcessor responseProcessor;
     private final CloseableHttpClient httpClient;
 
-    public DependencyDownloader(Logger logger, RepositoryURLManager repositoryURLManager,
-                                DependencyResponseProcessor responseProcessor) {
+    public DependencyDownloader(Logger logger,
+                                RepositoryURLManager repositoryURLManager,
+                                DependencyResponseProcessor responseProcessor,
+                                CloseableHttpClient httpClient) {
         this.logger = logger;
         this.repositoryUrlManager = repositoryURLManager;
         this.responseProcessor = responseProcessor;
-        // TODO: Authentication logic may be needed
-        this.httpClient = HttpClients.createDefault();
+        this.httpClient = httpClient;
     }
 
     public String download(String dependency) throws Exception {
@@ -34,7 +34,8 @@ public class DependencyDownloader {
                 repository -> tryRetrieveResponse(repository + "/" + dependency)
         ).findFirst();
         if (response.isPresent()) {
-            this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s", dependency);
+            this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s",
+                    dependency);
             return this.responseProcessor.process(response.get(), dependency);
         } else {
             this.logger.printLine(DEPENDENCY_NOT_FOUND.string() + ": %s", dependency);
