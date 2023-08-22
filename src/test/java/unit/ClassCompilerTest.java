@@ -4,13 +4,13 @@ import helper.ClearableDirectory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
 import compiler.FileGatherer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ClassCompilerTest {
@@ -28,8 +28,8 @@ public class ClassCompilerTest {
     @Test
     public void testCompilerEmptyDirectory() {
         File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of());
-        assertNotNull(outputInnerFiles);
-        assertEquals(0, outputInnerFiles.length);
+        Assertions.assertNotNull(outputInnerFiles);
+        Assertions.assertEquals(0, outputInnerFiles.length);
     }
 
     @Test
@@ -40,10 +40,10 @@ public class ClassCompilerTest {
         List<String> expectedJavaFiles = List.of(srcDirectory + "/Class.java");
 
         File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", expectedJavaFiles);
-        assertNotNull(outputInnerFiles);
-        assertEquals(1, outputInnerFiles.length);
+        Assertions.assertNotNull(outputInnerFiles);
+        Assertions.assertEquals(1, outputInnerFiles.length);
 
-        assertTrue((new File(outputInnerDirectory + "/Class.class")).exists());
+        Assertions.assertTrue((new File(outputInnerDirectory + "/Class.class")).exists());
     }
 
     @Test
@@ -56,11 +56,11 @@ public class ClassCompilerTest {
         );
 
         File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", expectedJavaFiles);
-        assertNotNull(outputInnerFiles);
-        assertEquals(1, outputInnerFiles.length);
+        Assertions.assertNotNull(outputInnerFiles);
+        Assertions.assertEquals(1, outputInnerFiles.length);
 
-        assertTrue((new File(outputInnerDirectory + "/dir1/Class1.class")).exists());
-        assertTrue((new File(outputInnerDirectory + "/dir2/Class2.class")).exists());
+        Assertions.assertTrue((new File(outputInnerDirectory + "/dir1/Class1.class")).exists());
+        Assertions.assertTrue((new File(outputInnerDirectory + "/dir2/Class2.class")).exists());
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
