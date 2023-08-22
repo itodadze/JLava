@@ -30,6 +30,7 @@ public class DependencyResponseProcessorTest {
     public void testDependencyResponseProcessorBasic() {
         StringLogger logger = new StringLogger();
         String outputDirectory = RES_PATH + "/basic";
+        String repository = "repo";
         String name = "basic";
         String content = "content\n";
 
@@ -42,10 +43,10 @@ public class DependencyResponseProcessorTest {
             when(httpEntity.getContent()).thenReturn(inputStream);
             when(httpResponse.getEntity()).thenReturn(httpEntity);
 
-            String path = processor.process(httpResponse, name);
+            String path = processor.process(httpResponse, repository, name);
             httpResponse.close();
 
-            Assertions.assertEquals(outputDirectory + "/" + name + ".jar", path);
+            Assertions.assertEquals(outputDirectory + "/" + repository + "/" + name + ".jar", path);
             Assertions.assertEquals(content, (new FileContentProvider(path)).getContent());
         } catch (Exception e) {
             Assertions.fail("Unexpected exception occurred: " + e.getMessage());

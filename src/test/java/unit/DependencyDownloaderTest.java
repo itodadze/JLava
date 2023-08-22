@@ -26,11 +26,12 @@ public class DependencyDownloaderTest {
     public void testDependencyDownloadExistingUrl() {
         String dependencyName = "dependency";
         String outputDirectory = "test";
+        String repository = "repo";
         StringLogger logger = new StringLogger();
         try {
-            String path = getDownloadedDependencyPath(dependencyName, outputDirectory,
+            String path = getDownloadedDependencyPath(dependencyName, outputDirectory, repository,
                     logger, 200);
-            Assertions.assertEquals(outputDirectory + "/" + dependencyName + ".jar",
+            Assertions.assertEquals(outputDirectory + "/" + repository + "/" + dependencyName + ".jar",
                     path);
             Assertions.assertTrue(logger.getLog().startsWith(
                     DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": " + dependencyName));
@@ -43,9 +44,10 @@ public class DependencyDownloaderTest {
     public void testDependencyDownloadNonexistentUrl() {
         String dependencyName = "dependency";
         String outputDirectory = "test";
+        String repository = "repo";
         StringLogger logger = new StringLogger();
         try {
-            getDownloadedDependencyPath(dependencyName, outputDirectory, logger, 400);
+            getDownloadedDependencyPath(dependencyName, outputDirectory, repository, logger, 400);
             Assertions.fail("Exception not thrown when expected");
         } catch (Exception e) {
             Assertions.assertTrue(logger.getLog().startsWith(
@@ -54,16 +56,14 @@ public class DependencyDownloaderTest {
     }
 
     public String getDownloadedDependencyPath(String name, String outputDirectory,
-                                              StringLogger logger, int statusCode)
+                                              String repository, StringLogger logger,
+                                              int statusCode)
         throws Exception {
-        String fullPath = outputDirectory + "/" + name + ".jar";
-
-        RepositoryURLManager repository = mock(RepositoryURLManager.class);
-        when(repository.getURLs()).thenReturn(List.of(""));
+        String fullPath = outputDirectory + "/" + repository + "/" + name + ".jar";
 
         DependencyResponseProcessor processor = mock(
                 DependencyResponseProcessor.class);
-        when(processor.process(any(CloseableHttpResponse.class), anyString()))
+        when(processor.process(any(CloseableHttpResponse.class), anyString(), anyString()))
                 .thenReturn(fullPath);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
@@ -73,7 +73,9 @@ public class DependencyDownloaderTest {
         when(httpResponse.getStatusLine()).thenReturn(statusLine);
         when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
 
-        DependencyDownloader downloader = new DependencyDownloader(logger, repository,
+        RepositoryURLManager repositoryURLManager = new RepositoryURLManager(List.of(repository));
+
+        DependencyDownloader downloader = new DependencyDownloader(logger, repositoryURLManager,
                 processor, httpClient);
         return downloader.download(name);
     }

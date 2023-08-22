@@ -4,6 +4,7 @@ import logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,9 +23,10 @@ public class DependencyManager {
         }
         @Override
         public void run() {
+            Optional<String> cached = dependencyCacheManager.cached(this.dependency);
             String path;
-            if (dependencyCacheManager.isCached(this.dependency)) {
-                path = dependencyCacheManager.getPath(this.dependency);
+            if (cached.isPresent()) {
+                path = cached.get();
             } else {
                 try {
                     path = dependencyDownloader.download(dependency);

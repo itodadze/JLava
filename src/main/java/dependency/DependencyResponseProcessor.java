@@ -19,10 +19,14 @@ public class DependencyResponseProcessor {
         this.dependencyDirectory = dependencyDirectory;
     }
 
-    public String process(CloseableHttpResponse response, String name) throws Exception {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public String process(CloseableHttpResponse response, String repository, String name) throws Exception {
         try {
             InputStream content = response.getEntity().getContent();
-            File jarFile = new File(this.dependencyDirectory + "/" + name + ".jar");
+            File repositoryDirectory = new File(this.dependencyDirectory + "/" + repository);
+            if (!repositoryDirectory.exists()) repositoryDirectory.mkdir();
+            File jarFile = new File(this.dependencyDirectory + "/" + repository
+                    + "/" + name + ".jar");
             if (!jarFile.createNewFile()) {
                 this.logger.printLine(JAR_FILE_CREATION_ERROR.string() + ": %s", name);
             } else {

@@ -6,7 +6,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import java.util.List;
+import java.util.AbstractMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -29,14 +30,15 @@ public class DependencyDownloader {
     }
 
     public String download(String dependency) throws Exception {
-        List<String> repositories = this.repositoryUrlManager.getURLs();
-        Optional<CloseableHttpResponse> response = repositories.stream().flatMap(
-                repository -> tryRetrieveResponse(repository + "/" + dependency)
-        ).findFirst();
+        Optional<Map.Entry<String,CloseableHttpResponse>> response = this
+                .repositoryUrlManager.firstSatisfying(
+                        repository -> tryRetrieveResponse(repository, dependency)
+        );
         if (response.isPresent()) {
             this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s",
                     dependency);
-            return this.responseProcessor.process(response.get(), dependency);
+            return this.responseProcessor.process(response.get().getValue(),
+                    response.get().getKey(), dependency);
         } else {
             this.logger.printLine(DEPENDENCY_NOT_FOUND.string() + ": %s", dependency);
             throw new NoHttpResponseException(DEPENDENCY_NOT_FOUND.string());
@@ -51,13 +53,15 @@ public class DependencyDownloader {
         }
     }
 
-    private Stream<CloseableHttpResponse> tryRetrieveResponse(String url) {
-        HttpGet httpget = new HttpGet(url);
+    private Stream<Map.Entry<String,CloseableHttpResponse>> tryRetrieveResponse(
+            String repository, String dependency) {
+
+        HttpGet httpget = new HttpGet(repository + "/" + dependency);
         try {
             CloseableHttpResponse result = this.httpClient.execute(httpget);
             int statusCode = result.getStatusLine().getStatusCode();
             if (statusCode >= 200 && statusCode < 300) {
-                return Stream.of(result);
+                return Stream.of(new AbstractMap.SimpleEntry<>(repository, result));
             } else {
                 return Stream.empty();
             }

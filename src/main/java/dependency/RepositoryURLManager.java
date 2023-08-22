@@ -1,6 +1,8 @@
 package dependency;
-
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class RepositoryURLManager {
 
@@ -16,8 +18,8 @@ public class RepositoryURLManager {
         }).toList();
     }
 
-    public List<String> getURLs() {
-        return this.urls;
+    public <T> Optional<T> firstSatisfying(Function<? super String, ? extends Stream<? extends T>> function) {
+        return this.urls.stream().flatMap(function).findFirst();
     }
 
 }
