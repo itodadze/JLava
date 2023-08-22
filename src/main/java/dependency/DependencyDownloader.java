@@ -31,20 +31,7 @@ public class DependencyDownloader {
     public String download(String dependency) throws Exception {
         List<String> repositories = this.repositoryUrlManager.getURLs();
         Optional<CloseableHttpResponse> response = repositories.stream().flatMap(
-                repository -> {
-                    HttpGet httpget = new HttpGet(repository + "/" + dependency);
-                    try {
-                        CloseableHttpResponse result = this.httpClient.execute(httpget);
-                        int statusCode = result.getStatusLine().getStatusCode();
-                        if (statusCode >= 200 && statusCode < 300) {
-                            return Stream.of(result);
-                        } else {
-                            return Stream.empty();
-                        }
-                    } catch (Exception e) {
-                        return Stream.empty();
-                    }
-                }
+                repository -> tryRetrieveResponse(repository + "/" + dependency)
         ).findFirst();
         if (response.isPresent()) {
             this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s", dependency);
@@ -60,6 +47,21 @@ public class DependencyDownloader {
             this.httpClient.close();
         } catch(Exception e) {
             this.logger.printLine(HTTP_ERROR.string() + ": %s", e.getMessage());
+        }
+    }
+
+    private Stream<CloseableHttpResponse> tryRetrieveResponse(String url) {
+        HttpGet httpget = new HttpGet(url);
+        try {
+            CloseableHttpResponse result = this.httpClient.execute(httpget);
+            int statusCode = result.getStatusLine().getStatusCode();
+            if (statusCode >= 200 && statusCode < 300) {
+                return Stream.of(result);
+            } else {
+                return Stream.empty();
+            }
+        } catch (Exception e) {
+            return Stream.empty();
         }
     }
 }
