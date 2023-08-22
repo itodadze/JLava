@@ -2,6 +2,7 @@ package dependency;
 
 import logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,14 +13,27 @@ import static logger.LogMessages.DEPENDENCIES_FETCH_SUCCESS;
 public class DependencyManager {
     private final static int NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     private class DependencyFetchTask implements Runnable {
+        private static final Object LIST_LOCK = new Object();
         private final String dependency;
-        public DependencyFetchTask(String dependency) {
+        private final List<String> paths;
+        public DependencyFetchTask(String dependency, List<String> paths) {
             this.dependency = dependency;
+            this.paths = paths;
         }
         @Override
         public void run() {
-            if (!dependencyCacheManager.isCached(this.dependency)) {
-                dependencyDownloader.download(dependency);
+            String path;
+            if (dependencyCacheManager.isCached(this.dependency)) {
+                path = dependencyCacheManager.getPath(this.dependency);
+            } else {
+                try {
+                    path = dependencyDownloader.download(dependency);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            synchronized(LIST_LOCK) {
+                this.paths.add(path);
             }
         }
     }
@@ -34,16 +48,19 @@ public class DependencyManager {
         this.dependencyCacheManager = dependencyCacheManager;
     }
 
-    public void fetch(List<String> dependencies) {
+    public List<String> fetchPaths(List<String> dependencies) {
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+        List<String> paths = new ArrayList<>();
         dependencies.forEach(
-                dependency -> executorService.execute(new DependencyFetchTask(dependency))
+                dependency -> executorService.execute(new DependencyFetchTask(dependency, paths))
         );
         try {
             executorService.wait();
             this.logger.printLine(DEPENDENCIES_FETCH_SUCCESS.string());
+            return paths;
         } catch (Exception e) {
             this.logger.printLine(DEPENDENCIES_FETCH_FAILURE.string() + ": %s", e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

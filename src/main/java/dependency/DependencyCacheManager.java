@@ -16,4 +16,7 @@ public class DependencyCacheManager {
         return (new File(this.dependencyDirectory + "/" + dependency + ".jar")).exists();
     }
 
+    public String getPath(String dependency) {
+        return this.dependencyDirectory + "/" + dependency + ".jar";
+    }
 }

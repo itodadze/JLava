@@ -19,7 +19,7 @@ public class DependencyResponseProcessor {
         this.dependencyDirectory = dependencyDirectory;
     }
 
-    public void process(CloseableHttpResponse response, String name) {
+    public String process(CloseableHttpResponse response, String name) throws Exception {
         try {
             InputStream content = response.getEntity().getContent();
             File jarFile = new File(this.dependencyDirectory + "/" + name + ".jar");
@@ -34,8 +34,10 @@ public class DependencyResponseProcessor {
                     }
                 }
             }
+            return jarFile.getPath();
         } catch(Exception e) {
             this.logger.printLine(JAR_FILE_PROCESS_ERROR.string() + ": %s", e.getMessage());
+            throw e;
         }
     }
 

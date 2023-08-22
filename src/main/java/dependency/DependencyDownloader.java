@@ -1,6 +1,7 @@
 package dependency;
 
 import logger.Logger;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -27,7 +28,7 @@ public class DependencyDownloader {
         this.httpClient = HttpClients.createDefault();
     }
 
-    public void download(String dependency) {
+    public String download(String dependency) throws Exception {
         List<String> repositories = this.repositoryUrlManager.getURLs();
         Optional<CloseableHttpResponse> response = repositories.stream().flatMap(
                 repository -> {
@@ -47,9 +48,10 @@ public class DependencyDownloader {
         ).findFirst();
         if (response.isPresent()) {
             this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s", dependency);
-            this.responseProcessor.process(response.get(), dependency);
+            return this.responseProcessor.process(response.get(), dependency);
         } else {
             this.logger.printLine(DEPENDENCY_NOT_FOUND.string() + ": %s", dependency);
+            throw new NoHttpResponseException(DEPENDENCY_NOT_FOUND.string());
         }
     }
 
