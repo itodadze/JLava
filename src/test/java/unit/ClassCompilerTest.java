@@ -1,5 +1,6 @@
 package unit;
 
+import helper.ClearableDirectory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
 import compiler.FileGatherer;
@@ -19,9 +20,9 @@ public class ClassCompilerTest {
 
     @BeforeEach
     public void clearOutputDirectories() {
-        clearDirectoryContent(new File(RES_PATH + "/empty/output"));
-        clearDirectoryContent(new File(RES_PATH + "/unbranched/output"));
-        clearDirectoryContent(new File(RES_PATH + "/branched/output"));
+        (new ClearableDirectory(new File(RES_PATH + "/empty/output"))).clearContent();
+        (new ClearableDirectory(new File(RES_PATH + "/unbranched/output"))).clearContent();
+        (new ClearableDirectory(new File(RES_PATH + "/branched/output"))).clearContent();
     }
 
     @Test
@@ -75,23 +76,6 @@ public class ClassCompilerTest {
         ClassCompiler compiler = new ClassCompiler(logger, fileGatherer);
         compiler.compileClasses(List.of(srcDirectory), outputDirectory);
         return outputDirFile.listFiles();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void clearDirectoryContent(File directory) {
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        clearDirectoryContent(file);
-                    }
-                    file.delete();
-                }
-            } else {
-                directory.delete();
-            }
-        }
     }
 
 }
