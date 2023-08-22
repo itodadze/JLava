@@ -10,7 +10,7 @@ import static logger.LogMessages.DEPENDENCIES_FETCH_FAILURE;
 import static logger.LogMessages.DEPENDENCIES_FETCH_SUCCESS;
 
 public class DependencyManager {
-    private final static int NUM_THREADS = 6;
+    private final static int NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     private class DependencyFetchTask implements Runnable {
         private final String dependency;
         public DependencyFetchTask(String dependency) {
