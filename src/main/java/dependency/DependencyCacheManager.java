@@ -10,21 +10,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class DependencyCacheManager {
-    public final static String CACHE_DIRECTORY_PATH = ".cache";
     private final static int CACHE_AUTO_EVICTION_DAYS = 5;
+    private final String cacheDirectory;
     private Cache<String, File> cache;
-    public DependencyCacheManager(int maxCacheSizeMb) {
+    public DependencyCacheManager(String cacheDirectory, int maxCacheSizeMb) {
+        this.cacheDirectory = cacheDirectory;
         this.cache = createCache(maxCacheSizeMb);
     }
 
-    public synchronized void save(String path) {
+    public synchronized void register(String path) {
         this.cache.put(path, new File(path));
     }
 
     public synchronized Optional<String> cached(RepositoryURLManager repositoryURLManager, String dependency) {
         return repositoryURLManager.firstSatisfying(
                 url -> {
-                    String path = Paths.get(CACHE_DIRECTORY_PATH, url, dependency + ".jar").toString();
+                    String path = Paths.get(this.cacheDirectory, url, dependency + ".jar").toString();
                     if (cache.getIfPresent(path) != null) {
                         return Stream.of(path);
                     } else {

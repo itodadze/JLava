@@ -34,7 +34,7 @@ public class DependencyManager {
             } else {
                 try {
                     path = dependencyDownloader.download(dependency);
-                    dependencyCacheManager.save(path);
+                    dependencyCacheManager.register(path);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

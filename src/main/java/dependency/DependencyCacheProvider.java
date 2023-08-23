@@ -5,18 +5,17 @@ import utility.FileGatherer;
 
 import java.util.List;
 
-import static dependency.DependencyCacheManager.CACHE_DIRECTORY_PATH;
-
 public class DependencyCacheProvider {
+    private static final String CACHE_DIRECTORY = ".cache";
     private static DependencyCacheManager INSTANCE = null;
     private static int previousMaxCacheSizeMb = 0;
 
     public synchronized DependencyCacheManager getInstance(Logger logger, int maxCacheSizeMb) {
         if (INSTANCE == null) {
-            INSTANCE = new DependencyCacheManager(maxCacheSizeMb);
+            INSTANCE = new DependencyCacheManager(CACHE_DIRECTORY, maxCacheSizeMb);
             FileGatherer jarFileGatherer = new FileGatherer(logger, "jar");
-            jarFileGatherer.filesFromSources(List.of(CACHE_DIRECTORY_PATH))
-                    .forEach(path -> INSTANCE.save(path));
+            jarFileGatherer.filesFromSources(List.of(CACHE_DIRECTORY))
+                    .forEach(path -> INSTANCE.register(path));
 
         } else if (previousMaxCacheSizeMb != maxCacheSizeMb) {
             INSTANCE.updateCacheSize(maxCacheSizeMb);
