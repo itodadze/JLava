@@ -6,7 +6,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import java.util.AbstractMap;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -56,12 +56,12 @@ public class DependencyDownloader {
     private Stream<Map.Entry<String,CloseableHttpResponse>> tryRetrieveResponse(
             String repository, String dependency) {
 
-        HttpGet httpget = new HttpGet(repository + "/" + dependency);
+        HttpGet httpget = new HttpGet(Paths.get(repository, dependency).toString());
         try {
             CloseableHttpResponse result = this.httpClient.execute(httpget);
             int statusCode = result.getStatusLine().getStatusCode();
             if (statusCode >= 200 && statusCode < 300) {
-                return Stream.of(new AbstractMap.SimpleEntry<>(repository, result));
+                return Stream.of(Map.entry(repository, result));
             } else {
                 return Stream.empty();
             }

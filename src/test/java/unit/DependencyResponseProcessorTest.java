@@ -13,17 +13,19 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Paths;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DependencyResponseProcessorTest {
 
-    private static final String RES_PATH = "src/test/resources/processor";
+    private static final String RES_PATH = Paths
+            .get("src", "test", "resources", "processor").toString();
 
     @BeforeEach
     public void clearOutputDirectories() {
-        (new ClearableDirectory(new File(RES_PATH + "/basic"))).clearContent();
+        (new ClearableDirectory(new File(Paths.get(RES_PATH, "basic").toString()))).clearContent();
     }
 
     @Test
@@ -46,7 +48,8 @@ public class DependencyResponseProcessorTest {
             String path = processor.process(httpResponse, repository, name);
             httpResponse.close();
 
-            Assertions.assertEquals(outputDirectory + "/" + repository + "/" + name + ".jar", path);
+            Assertions.assertEquals(Paths.get(outputDirectory, repository, name + ".jar")
+                    .toString(), path);
             Assertions.assertEquals(content, (new FileContentProvider(path)).getContent());
         } catch (Exception e) {
             Assertions.fail("Unexpected exception occurred: " + e.getMessage());

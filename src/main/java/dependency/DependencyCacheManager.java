@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -12,7 +13,6 @@ public class DependencyCacheManager {
     public final static String CACHE_DIRECTORY_PATH = ".cache";
     private final static int CACHE_AUTO_EVICTION_DAYS = 5;
     private Cache<String, File> cache;
-
     public DependencyCacheManager(int maxCacheSizeMb) {
         this.cache = createCache(maxCacheSizeMb);
     }
@@ -24,7 +24,7 @@ public class DependencyCacheManager {
     public synchronized Optional<String> cached(RepositoryURLManager repositoryURLManager, String dependency) {
         return repositoryURLManager.firstSatisfying(
                 url -> {
-                    String path = CACHE_DIRECTORY_PATH + "/" + url + "/" + dependency + ".jar";
+                    String path = Paths.get(CACHE_DIRECTORY_PATH, url, dependency + ".jar").toString();
                     if (cache.getIfPresent(path) != null) {
                         return Stream.of(path);
                     } else {

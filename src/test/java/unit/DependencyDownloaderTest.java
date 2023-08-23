@@ -11,6 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import static logger.LogMessages.DEPENDENCY_DOWNLOAD_SUCCESS;
@@ -29,10 +30,10 @@ public class DependencyDownloaderTest {
         String repository = "repo";
         StringLogger logger = new StringLogger();
         try {
-            String path = getDownloadedDependencyPath(dependencyName, outputDirectory, repository,
-                    logger, 200);
-            Assertions.assertEquals(outputDirectory + "/" + repository + "/" + dependencyName + ".jar",
-                    path);
+            String path = getDownloadedDependencyPath(dependencyName, outputDirectory,
+                    repository, logger, 200);
+            Assertions.assertEquals(Paths.get(outputDirectory, repository,
+                    dependencyName + ".jar").toString(), path);
             Assertions.assertTrue(logger.getLog().startsWith(
                     DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": " + dependencyName));
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class DependencyDownloaderTest {
                                               String repository, StringLogger logger,
                                               int statusCode)
         throws Exception {
-        String fullPath = outputDirectory + "/" + repository + "/" + name + ".jar";
+        String fullPath = Paths.get(outputDirectory, repository, name + ".jar").toString();
 
         DependencyResponseProcessor processor = mock(
                 DependencyResponseProcessor.class);
