@@ -15,7 +15,6 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 public class ClassCompilerTest {
-
     private static final String RES_PATH = Paths
             .get("src", "test", "resources", "compiler").toString();
     private static final String INNER_OUTPUT_PATH = "compiler";
@@ -28,11 +27,14 @@ public class ClassCompilerTest {
                 .toString()))).clearContent();
         (new ClearableDirectory(new File(Paths.get(RES_PATH, "branched", "output")
                 .toString()))).clearContent();
+        (new ClearableDirectory(new File(Paths.get(RES_PATH, "dependency", "output")
+                .toString()))).clearContent();
     }
 
     @Test
     public void testCompilerEmptyDirectory() {
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of());
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of(),
+                List.of());
         Assertions.assertNotNull(outputInnerFiles);
         Assertions.assertEquals(0, outputInnerFiles.length);
     }
@@ -46,7 +48,8 @@ public class ClassCompilerTest {
         List<String> expectedJavaFiles = List.of(Paths.get(srcDirectory,
                 "Class.java").toString());
 
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", expectedJavaFiles);
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", List.of(),
+                expectedJavaFiles);
         Assertions.assertNotNull(outputInnerFiles);
         Assertions.assertEquals(1, outputInnerFiles.length);
 
@@ -65,7 +68,8 @@ public class ClassCompilerTest {
                 Paths.get(srcDirectory, "dir2", "Class2.java").toString()
         );
 
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", expectedJavaFiles);
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", List.of(),
+                expectedJavaFiles);
         Assertions.assertNotNull(outputInnerFiles);
         Assertions.assertEquals(1, outputInnerFiles.length);
 
@@ -75,8 +79,39 @@ public class ClassCompilerTest {
                 "Class2.class").toString())).exists());
     }
 
+    @Test
+    public void testCompilerWithDependencies() {
+        String srcDirectory = Paths.get(RES_PATH, "dependency", "src").toString();
+        String dependencyDirectory = Paths.get(RES_PATH, "dependency", "lib").toString();
+        List<String> dependencies = List.of(Paths.get(
+                dependencyDirectory, "commons-io-2.4.jar").toString());
+        List<String> expectedJavaFiles = List.of(
+                Paths.get(srcDirectory, "Class.java").toString());
+
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("dependency", dependencies,
+                expectedJavaFiles);
+
+        Assertions.assertNotNull(outputInnerFiles);
+        Assertions.assertEquals(1, outputInnerFiles.length);
+    }
+
+    @Test
+    public void testCompilerWithoutDependencies() {
+        String srcDirectory = Paths.get(RES_PATH, "lacking", "src").toString();
+        List<String> expectedJavaFiles = List.of(
+                Paths.get(srcDirectory, "Class.java").toString()
+        );
+
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("lacking", List.of(),
+                expectedJavaFiles);
+
+        Assertions.assertNotNull(outputInnerFiles);
+        Assertions.assertEquals(0, outputInnerFiles.length);
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private File[] getCompiledInnerOutputFiles(String directory, List<String> javaFiles) {
+    private File[] getCompiledInnerOutputFiles(String directory, List<String> dependencies,
+                                               List<String> javaFiles) {
         String srcDirectory = Paths.get(RES_PATH, directory, "src").toString();
         String outputDirectory = Paths.get(RES_PATH, directory, "output").toString();
         File outputDirFile = new File(outputDirectory);
@@ -86,7 +121,7 @@ public class ClassCompilerTest {
 
         when(fileGatherer.filesFromSources(anyList())).thenReturn(javaFiles);
         ClassCompiler compiler = new ClassCompiler(logger, fileGatherer);
-        compiler.compileClasses(List.of(srcDirectory), outputDirectory);
+        compiler.compileClasses(List.of(srcDirectory), dependencies, outputDirectory);
         return outputDirFile.listFiles();
     }
 

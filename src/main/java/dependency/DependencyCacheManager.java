@@ -41,7 +41,7 @@ public class DependencyCacheManager {
         this.cache = newCache;
     }
 
-    private Cache<String, File> createCache(int maxCacheSizeMb) {
+    private synchronized Cache<String, File> createCache(int maxCacheSizeMb) {
         return Caffeine.newBuilder()
                 .maximumWeight(maxCacheSizeMb)
                 .expireAfterAccess(CACHE_AUTO_EVICTION_DAYS, TimeUnit.DAYS)

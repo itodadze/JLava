@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
 public class DependencyCacheManagerTest {
 
+    private final static int WAIT_TIME = 1000;
     private final static String RES_PATH = Paths.get("src", "test",
             "resources", "cache").toString();
 
@@ -53,6 +53,8 @@ public class DependencyCacheManagerTest {
             newFile.createNewFile();
             manager.register(newDependencyPath);
 
+            Thread.sleep(WAIT_TIME);
+
             Optional<String> resultNewFile = manager.cached(
                     new RepositoryURLManager(List.of(repository)), newDependency
             );
@@ -63,7 +65,7 @@ public class DependencyCacheManagerTest {
                     new RepositoryURLManager(List.of(repository)), oldDependency
             );
             Assertions.assertFalse(resultOldFile.isPresent());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Assertions.fail("Exception occurred when not expected: " + e.getMessage());
         }
     }
@@ -91,6 +93,8 @@ public class DependencyCacheManagerTest {
 
             manager.updateCacheSize(reducedSize);
 
+            Thread.sleep(WAIT_TIME);
+
             int count = 0;
             Optional<String> resultDependency2 = manager.cached(
                     new RepositoryURLManager(List.of(repository)), dependency2
@@ -102,7 +106,7 @@ public class DependencyCacheManagerTest {
             );
             if (resultDependency1.isPresent()) count++;
             Assertions.assertEquals(1, count);
-        } catch (IOException e) {
+        } catch (Exception e) {
             Assertions.fail("Exception occurred when not expected: " + e.getMessage());
         }
     }
