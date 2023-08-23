@@ -1,6 +1,6 @@
 package unit;
 
-import compiler.FileGatherer;
+import utility.FileGatherer;
 import helper.StringLogger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,17 +15,17 @@ public class FileGathererTest {
     @Test
     public void testGatherFromInvalidSources() {
         StringLogger logger = new StringLogger();
-        FileGatherer fileGatherer = new FileGatherer(logger);
-        fileGatherer.javaFilesFromSources(List.of(RES_PATH + "/invalid"));
+        FileGatherer fileGatherer = new FileGatherer(logger, "java");
+        fileGatherer.filesFromSources(List.of(RES_PATH + "/invalid"));
         Assertions.assertTrue(logger.getLog().startsWith(FILE_PATH_NOT_FOUND.string()));
     }
 
     @Test
     public void testGatherFromSingleJavaFile() {
         StringLogger logger = new StringLogger();
-        FileGatherer fileGatherer = new FileGatherer(logger);
+        FileGatherer fileGatherer = new FileGatherer(logger, "java");
         String javaFilePath = RES_PATH + "/SingleJavaClass.java";
-        List<String> result = fileGatherer.javaFilesFromSources(
+        List<String> result = fileGatherer.filesFromSources(
                 List.of(javaFilePath));
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(javaFilePath, result.get(0));
@@ -34,9 +34,9 @@ public class FileGathererTest {
     @Test
     public void testGatherFromUnbranched() {
         StringLogger logger = new StringLogger();
-        FileGatherer fileGatherer = new FileGatherer(logger);
+        FileGatherer fileGatherer = new FileGatherer(logger, "java");
         String src = RES_PATH + "/unbranched";
-        List<String> result = fileGatherer.javaFilesFromSources(
+        List<String> result = fileGatherer.filesFromSources(
                 List.of(src));
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.containsAll(List.of(src +"/Class1.java", src + "/Class2.java")));
@@ -45,9 +45,9 @@ public class FileGathererTest {
     @Test
     public void testGatherFromBranched() {
         StringLogger logger = new StringLogger();
-        FileGatherer fileGatherer = new FileGatherer(logger);
+        FileGatherer fileGatherer = new FileGatherer(logger, "java");
         String src = RES_PATH + "/branched";
-        List<String> result = fileGatherer.javaFilesFromSources(
+        List<String> result = fileGatherer.filesFromSources(
                 List.of(src));
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.containsAll(List.of(src + "/Class1.java", src + "/branch/Class2.java")));
@@ -56,10 +56,10 @@ public class FileGathererTest {
     @Test
     public void testGatherFromMultiple() {
         StringLogger logger = new StringLogger();
-        FileGatherer fileGatherer = new FileGatherer(logger);
+        FileGatherer fileGatherer = new FileGatherer(logger, "java");
         String branchedSrc = RES_PATH + "/branched";
         String unbranchedSrc = RES_PATH + "/unbranched";
-        List<String> result = fileGatherer.javaFilesFromSources(
+        List<String> result = fileGatherer.filesFromSources(
                 List.of(branchedSrc, unbranchedSrc));
         Assertions.assertEquals(4, result.size());
         Assertions.assertTrue(result.containsAll(List.of(

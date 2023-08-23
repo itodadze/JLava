@@ -15,21 +15,26 @@ public class DependencyManager {
     private final static int NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     private class DependencyFetchTask implements Runnable {
         private static final Object LIST_LOCK = new Object();
+        private final RepositoryURLManager repositoryURLManager;
         private final String dependency;
         private final List<String> paths;
-        public DependencyFetchTask(String dependency, List<String> paths) {
+        public DependencyFetchTask(RepositoryURLManager repositoryURLManager,
+                                   String dependency, List<String> paths) {
+            this.repositoryURLManager = repositoryURLManager;
             this.dependency = dependency;
             this.paths = paths;
         }
         @Override
         public void run() {
-            Optional<String> cached = dependencyCacheManager.cached(this.dependency);
+            Optional<String> cached = dependencyCacheManager.cached(this.repositoryURLManager,
+                    this.dependency);
             String path;
             if (cached.isPresent()) {
                 path = cached.get();
             } else {
                 try {
                     path = dependencyDownloader.download(dependency);
+                    dependencyCacheManager.save(path);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -50,11 +55,12 @@ public class DependencyManager {
         this.dependencyCacheManager = dependencyCacheManager;
     }
 
-    public List<String> fetchPaths(List<String> dependencies) {
+    public List<String> fetchPaths(RepositoryURLManager repositoryURLManager, List<String> dependencies) {
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
         List<String> paths = new ArrayList<>();
         dependencies.forEach(
-                dependency -> executorService.execute(new DependencyFetchTask(dependency, paths))
+                dependency -> executorService.execute(new DependencyFetchTask(
+                        repositoryURLManager, dependency, paths))
         );
         try {
             executorService.wait();

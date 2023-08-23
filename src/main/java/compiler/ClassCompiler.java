@@ -1,6 +1,7 @@
 package compiler;
 
 import logger.Logger;
+import utility.FileGatherer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ClassCompiler {
         command.add("-d");
         command.add(outputDirectory);
         command.addAll(
-                fileGatherer.javaFilesFromSources(sourceFiles)
+                fileGatherer.filesFromSources(sourceFiles)
         );
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {

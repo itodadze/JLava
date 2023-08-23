@@ -1,34 +1,52 @@
 package dependency;
 
-import logger.Logger;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class DependencyCacheManager {
-    private final static String CACHE_DIRECTORY_PATH = ".cache";
-    private final Logger logger;
-    private final String dependencyDirectory;
-    private final RepositoryURLManager repositoryUrlManager;
-    public DependencyCacheManager(Logger logger, String dependencyDirectory,
-                                  RepositoryURLManager repositoryUrlManager) {
-        this.logger = logger;
-        this.dependencyDirectory = dependencyDirectory;
-        this.repositoryUrlManager = repositoryUrlManager;
+    public final static String CACHE_DIRECTORY_PATH = ".cache";
+    private final static int CACHE_AUTO_EVICTION_DAYS = 5;
+    private Cache<String, File> cache;
+
+    public DependencyCacheManager(int maxCacheSizeMb) {
+        this.cache = createCache(maxCacheSizeMb);
     }
 
-    public Optional<String> cached(String dependency) {
-        return this.repositoryUrlManager.firstSatisfying(
+    public synchronized void save(String path) {
+        this.cache.put(path, new File(path));
+    }
+
+    public synchronized Optional<String> cached(RepositoryURLManager repositoryURLManager, String dependency) {
+        return repositoryURLManager.firstSatisfying(
                 url -> {
                     String path = CACHE_DIRECTORY_PATH + "/" + url + "/" + dependency + ".jar";
-                    if ((new File(path)).exists()) {
+                    if (cache.getIfPresent(path) != null) {
                         return Stream.of(path);
                     } else {
                         return Stream.empty();
                     }
                 }
         );
+    }
+
+    public synchronized void updateCacheSize(int maxCacheSizeMb) {
+        Cache<String, File> newCache = createCache(maxCacheSizeMb);
+        newCache.putAll(this.cache.asMap());
+        this.cache = newCache;
+    }
+
+    private Cache<String, File> createCache(int maxCacheSizeMb) {
+        return Caffeine.newBuilder()
+                .maximumWeight(maxCacheSizeMb)
+                .expireAfterAccess(CACHE_AUTO_EVICTION_DAYS, TimeUnit.DAYS)
+                .removalListener(new DependencyRemovalListener())
+                .weigher(new DependencyWeigher())
+                .build();
     }
 
 }

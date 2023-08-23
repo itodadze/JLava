@@ -3,7 +3,7 @@ package unit;
 import helper.ClearableDirectory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
-import compiler.FileGatherer;
+import utility.FileGatherer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,7 @@ public class ClassCompilerTest {
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = mock(FileGatherer.class);
 
-        when(fileGatherer.javaFilesFromSources(anyList())).thenReturn(javaFiles);
+        when(fileGatherer.filesFromSources(anyList())).thenReturn(javaFiles);
         ClassCompiler compiler = new ClassCompiler(logger, fileGatherer);
         compiler.compileClasses(List.of(srcDirectory), outputDirectory);
         return outputDirFile.listFiles();
