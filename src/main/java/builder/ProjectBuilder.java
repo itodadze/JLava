@@ -6,6 +6,7 @@ import compiler.ClassCompiler;
 import dependency.DependencyManager;
 import dependency.RepositoryURLManager;
 import logger.Logger;
+import packager.Packager;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import static dependency.RepositoryCatalog.MAVEN_CENTRAL;
 import static logger.LogMessages.*;
 
 public class ProjectBuilder {
+    private static final String NAME = "name";
     private static final String SOURCE = "sourceDirs";
     private static final String OUTPUT = "outputDir";
     private static final String REPOSITORIES = "repositories";
@@ -24,11 +26,14 @@ public class ProjectBuilder {
     private final Logger logger;
     private final ClassCompiler classCompiler;
     private final DependencyManager dependencyManager;
+    private final Packager packager;
     public ProjectBuilder(Logger logger, ClassCompiler classCompiler,
-                          DependencyManager dependencyManager) {
+                          DependencyManager dependencyManager,
+                          Packager packager) {
         this.logger = logger;
         this.classCompiler = classCompiler;
         this.dependencyManager = dependencyManager;
+        this.packager = packager;
     }
 
     public void build(String configFilePath) {
@@ -54,13 +59,14 @@ public class ProjectBuilder {
             assertRequirements(map);
             List<String> dependencyPaths = analyzeDependencies(mapper, map);
             analyzeClasses(mapper, map, dependencyPaths);
+            packageClasses(mapper, map);
         } catch(Exception e) {
             this.logger.printLine(BUILD_ERROR.string() + ": %s", e.getMessage());
         }
     }
 
     private void assertRequirements(Map<String, Object> map) {
-        List.of(SOURCE, OUTPUT, DEPENDENCIES).forEach(requirement -> {
+        List.of(NAME, SOURCE, OUTPUT, DEPENDENCIES).forEach(requirement -> {
             if (!map.containsKey(requirement)) {
                 this.logger.printLine(CONFIG_FILE_ERROR.string() + ": no " + requirement);
                 throw new IllegalArgumentException(CONFIG_FILE_ERROR.string());
@@ -85,6 +91,11 @@ public class ProjectBuilder {
         List<String> sources = accessList(mapper, map, SOURCE);
         String output = mapper.convertValue(map.get(OUTPUT), String.class);
         this.classCompiler.compileClasses(sources, dependencies, output);
+    }
+
+    private void packageClasses(ObjectMapper mapper, Map<String, Object> map) throws Exception {
+        this.packager.packageClasses(mapper.convertValue(map.get(NAME), String.class),
+                mapper.convertValue(map.get(OUTPUT), String.class));
     }
 
     private List<String> accessList(ObjectMapper mapper, Map<String, Object> map, String key)

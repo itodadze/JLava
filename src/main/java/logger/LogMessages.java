@@ -14,7 +14,9 @@ public enum LogMessages {
     CONFIG_NOT_FOUND("Could not find config file"),
     JSON_FILE_ERROR("Could not parse json file"),
     CONFIG_FILE_ERROR("Config file error"),
-    BUILD_ERROR("Could not build");
+    BUILD_ERROR("Could not build"),
+    PACKAGING_ERROR("Could not package compiled classes"),
+    PACKAGING_SUCCESS("Packaged compiled classes successfully");
 
     private final String message;
 
