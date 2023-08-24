@@ -2,7 +2,7 @@ package unit;
 
 import dependency.DependencyCacheManager;
 import dependency.RepositoryURLManager;
-import helper.ClearableDirectory;
+import utility.ClearableDirectory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

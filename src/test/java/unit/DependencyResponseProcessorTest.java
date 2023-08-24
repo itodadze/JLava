@@ -1,7 +1,7 @@
 package unit;
 
 import dependency.DependencyResponseProcessor;
-import helper.ClearableDirectory;
+import utility.ClearableDirectory;
 import helper.FileContentProvider;
 import helper.StringLogger;
 import org.apache.http.HttpEntity;

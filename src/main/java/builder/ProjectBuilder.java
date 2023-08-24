@@ -7,6 +7,7 @@ import dependency.DependencyManager;
 import dependency.RepositoryURLManager;
 import logger.Logger;
 import packager.Packager;
+import utility.ClearableDirectory;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,14 +56,13 @@ public class ProjectBuilder {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void buildAccordingTo(ObjectMapper mapper, Map<String, Object> map) {
         try {
             assertRequirements(map);
             List<String> dependencyPaths = analyzeDependencies(mapper, map);
             String tempClassDirectory = analyzeClasses(mapper, map, dependencyPaths);
             packageClasses(mapper, map, tempClassDirectory);
-            (new File(tempClassDirectory)).delete();
+            (new ClearableDirectory(new File(tempClassDirectory))).clearContent();
         } catch(Exception e) {
             this.logger.printLine(BUILD_ERROR.string() + ": %s", e.getMessage());
         }

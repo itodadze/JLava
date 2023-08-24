@@ -70,6 +70,8 @@ public class DependencyManager {
         } catch (Exception e) {
             this.logger.printLine(DEPENDENCIES_FETCH_FAILURE.string() + ": %s", e.getMessage());
             throw new RuntimeException(e);
+        } finally {
+            this.dependencyDownloader.close();
         }
     }
 

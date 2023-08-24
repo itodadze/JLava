@@ -1,6 +1,6 @@
 package unit;
 
-import helper.ClearableDirectory;
+import utility.ClearableDirectory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
 import utility.FileGatherer;
