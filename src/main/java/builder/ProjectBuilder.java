@@ -10,6 +10,7 @@ import packager.Packager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -54,12 +55,14 @@ public class ProjectBuilder {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void buildAccordingTo(ObjectMapper mapper, Map<String, Object> map) {
         try {
             assertRequirements(map);
             List<String> dependencyPaths = analyzeDependencies(mapper, map);
-            analyzeClasses(mapper, map, dependencyPaths);
-            packageClasses(mapper, map);
+            String tempClassDirectory = analyzeClasses(mapper, map, dependencyPaths);
+            packageClasses(mapper, map, tempClassDirectory);
+            (new File(tempClassDirectory)).delete();
         } catch(Exception e) {
             this.logger.printLine(BUILD_ERROR.string() + ": %s", e.getMessage());
         }
@@ -87,15 +90,20 @@ public class ProjectBuilder {
         );
     }
 
-    private void analyzeClasses(ObjectMapper mapper, Map<String, Object> map, List<String> dependencies) {
+    private String analyzeClasses(ObjectMapper mapper, Map<String, Object> map, List<String> dependencies) {
         List<String> sources = accessList(mapper, map, SOURCE);
         String output = mapper.convertValue(map.get(OUTPUT), String.class);
-        this.classCompiler.compileClasses(sources, dependencies, output);
+        String tempClassDirectory = Paths.get(output, "temp").toString();
+        if ((new File(tempClassDirectory)).mkdir()) {
+            this.classCompiler.compileClasses(sources, dependencies, tempClassDirectory);
+        }
+        return tempClassDirectory;
     }
 
-    private void packageClasses(ObjectMapper mapper, Map<String, Object> map) throws Exception {
+    private void packageClasses(ObjectMapper mapper, Map<String, Object> map,
+                                String tempClassDirectory) throws Exception {
         this.packager.packageClasses(mapper.convertValue(map.get(NAME), String.class),
-                mapper.convertValue(map.get(OUTPUT), String.class));
+                tempClassDirectory, mapper.convertValue(map.get(OUTPUT), String.class));
     }
 
     private List<String> accessList(ObjectMapper mapper, Map<String, Object> map, String key)

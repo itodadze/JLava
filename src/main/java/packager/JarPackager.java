@@ -14,18 +14,18 @@ public class JarPackager implements  Packager{
         this.logger = logger;
     }
     @Override
-    public void packageClasses(String name, String directory)
+    public void packageClasses(String name, String source, String directory)
         throws Exception {
         List<String> command = List.of("jar", "cvf",
                 Paths.get(directory, name + ".jar").toString(),
-                "-C", Paths.get(directory, "*.class").toString());
+                "-C", Paths.get(source, "*.class").toString());
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
                 this.logger.printLine(PACKAGING_SUCCESS.string());
-                if (removeClassesOutsideJar(directory) != 0) {
+                if (removeClassesOutsideJar(source) != 0) {
                     this.logger.printLine(PACKAGING_ERROR.string() + ": exit code: %d", exitCode);
                 }
             } else {
