@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 
 import static logger.LogMessages.JAR_FILE_CREATION_ERROR;
 import static logger.LogMessages.JAR_FILE_PROCESS_ERROR;
@@ -23,10 +24,10 @@ public class DependencyResponseProcessor {
     public String process(CloseableHttpResponse response, String repository, String name) throws Exception {
         try {
             InputStream content = response.getEntity().getContent();
-            File repositoryDirectory = new File(this.dependencyDirectory + "/" + repository);
+            File repositoryDirectory = new File(Paths.get(this.dependencyDirectory, repository).toString());
             if (!repositoryDirectory.exists()) repositoryDirectory.mkdir();
-            File jarFile = new File(this.dependencyDirectory + "/" + repository
-                    + "/" + name + ".jar");
+            File jarFile = new File(Paths.get(this.dependencyDirectory, repository,
+                    name + ".jar").toString());
             if (!jarFile.createNewFile()) {
                 this.logger.printLine(JAR_FILE_CREATION_ERROR.string() + ": %s", name);
             } else {

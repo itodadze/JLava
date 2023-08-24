@@ -6,11 +6,11 @@ import utility.FileGatherer;
 import java.util.List;
 
 public class DependencyCacheProvider {
-    private static final String CACHE_DIRECTORY = ".cache";
+    public static final String CACHE_DIRECTORY = ".cache";
     private static DependencyCacheManager INSTANCE = null;
     private static int previousMaxCacheSizeMb = 0;
 
-    public synchronized DependencyCacheManager getInstance(Logger logger, int maxCacheSizeMb) {
+    public static synchronized DependencyCacheManager getInstance(Logger logger, int maxCacheSizeMb) {
         if (INSTANCE == null) {
             INSTANCE = new DependencyCacheManager(CACHE_DIRECTORY, maxCacheSizeMb);
             FileGatherer jarFileGatherer = new FileGatherer(logger, "jar");
