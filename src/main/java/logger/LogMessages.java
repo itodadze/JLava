@@ -10,7 +10,11 @@ public enum LogMessages {
     JAR_FILE_PROCESS_ERROR("Could not process jar file"),
     JAR_FILE_CREATION_ERROR("Could not create jar file"),
     DEPENDENCIES_FETCH_SUCCESS("All dependencies fetched"),
-    DEPENDENCIES_FETCH_FAILURE("Dependencies could not be fetched");
+    DEPENDENCIES_FETCH_FAILURE("Dependencies could not be fetched"),
+    CONFIG_NOT_FOUND("Could not find config file"),
+    JSON_FILE_ERROR("Could not parse json file"),
+    CONFIG_FILE_ERROR("Config file error"),
+    BUILD_ERROR("Could not build");
 
     private final String message;
 

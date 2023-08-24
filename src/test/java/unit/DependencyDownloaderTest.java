@@ -76,9 +76,9 @@ public class DependencyDownloaderTest {
 
         RepositoryURLManager repositoryURLManager = new RepositoryURLManager(List.of(repository));
 
-        DependencyDownloader downloader = new DependencyDownloader(logger, repositoryURLManager,
+        DependencyDownloader downloader = new DependencyDownloader(logger,
                 processor, httpClient);
-        return downloader.download(name);
+        return downloader.download(repositoryURLManager, name);
     }
 
 }

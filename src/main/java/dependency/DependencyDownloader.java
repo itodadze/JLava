@@ -15,24 +15,20 @@ import static logger.LogMessages.*;
 
 public class DependencyDownloader {
     private final Logger logger;
-    private final RepositoryURLManager repositoryUrlManager;
     private final DependencyResponseProcessor responseProcessor;
     private final CloseableHttpClient httpClient;
 
     public DependencyDownloader(Logger logger,
-                                RepositoryURLManager repositoryURLManager,
                                 DependencyResponseProcessor responseProcessor,
                                 CloseableHttpClient httpClient) {
         this.logger = logger;
-        this.repositoryUrlManager = repositoryURLManager;
         this.responseProcessor = responseProcessor;
         this.httpClient = httpClient;
     }
 
-    public String download(String dependency) throws Exception {
-        Optional<Map.Entry<String,CloseableHttpResponse>> response = this
-                .repositoryUrlManager.firstSatisfying(
-                        repository -> tryRetrieveResponse(repository, dependency)
+    public String download(RepositoryURLManager repositoryUrlManager, String dependency) throws Exception {
+        Optional<Map.Entry<String,CloseableHttpResponse>> response = repositoryUrlManager
+                .firstSatisfying(repository -> tryRetrieveResponse(repository, dependency)
         );
         if (response.isPresent()) {
             this.logger.printLine(DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": %s",

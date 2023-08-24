@@ -33,7 +33,8 @@ public class DependencyManager {
                 path = cached.get();
             } else {
                 try {
-                    path = dependencyDownloader.download(dependency);
+                    path = dependencyDownloader.download(this.repositoryURLManager,
+                            dependency);
                     dependencyCacheManager.register(path);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
