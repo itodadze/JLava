@@ -18,7 +18,7 @@ public class JarPackager implements  Packager{
         throws Exception {
         List<String> command = List.of("jar", "cvf",
                 Paths.get(directory, name + ".jar").toString(),
-                "-C", Paths.get(source, "*.class").toString());
+                "-C", Paths.get(source).toString(), ".");
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {
             Process process = processBuilder.start();

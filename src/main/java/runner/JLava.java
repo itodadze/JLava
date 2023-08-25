@@ -56,6 +56,7 @@ public class JLava {
                             logger, compiler, dependencyManager, packager
                     );
                     builder.build(configFilePath);
+                    logger.close();
 
                 }
             } catch (Exception e) {
