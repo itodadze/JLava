@@ -1,0 +1,5 @@
+{
+  "string": "string",
+  "list": ["string1", "string2"],
+  "emptyList": []
+}
