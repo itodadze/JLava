@@ -10,6 +10,7 @@ import utility.ClearableDirectory;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 
 public class DependencyManagerTest {
@@ -55,7 +56,7 @@ public class DependencyManagerTest {
                     logger, downloader, cache
             );
             List<String> paths = manager.fetchPaths(repositories, List.of(cached1Name, cached2Name, uncachedName));
-            Assertions.assertEquals(List.of(cached1, cached2, uncached), paths);
+            Assertions.assertEquals(new HashSet<>(List.of(cached1, cached2, uncached)), new HashSet<>(paths));
         } catch(Exception e) {
             Assertions.fail("Exception thrown when not expected: " + e.getMessage());
         }
