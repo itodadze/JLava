@@ -5,6 +5,7 @@ import logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,16 +19,18 @@ public class DependencyManager {
         private final RepositoryURLManager repositoryURLManager;
         private final String dependency;
         private final List<String> paths;
+        private final CountDownLatch latch;
         public DependencyFetchTask(RepositoryURLManager repositoryURLManager,
-                                   String dependency, List<String> paths) {
+                                   String dependency, List<String> paths,
+                                   CountDownLatch latch) {
             this.repositoryURLManager = repositoryURLManager;
             this.dependency = dependency;
             this.paths = paths;
+            this.latch = latch;
         }
         @Override
         public void run() {
-            Optional<String> cached = dependencyCacheManager.cached(this.repositoryURLManager,
-                    this.dependency);
+            Optional<String> cached = dependencyCacheManager.cached(this.repositoryURLManager, this.dependency);
             String path;
             if (cached.isPresent()) {
                 path = cached.get();
@@ -43,6 +46,7 @@ public class DependencyManager {
             synchronized(LIST_LOCK) {
                 this.paths.add(path);
             }
+            this.latch.countDown();
         }
     }
     private final Logger logger;
@@ -57,20 +61,22 @@ public class DependencyManager {
     }
 
     public List<String> fetchPaths(RepositoryURLManager repositoryURLManager, List<String> dependencies) {
+        CountDownLatch countDownLatch = new CountDownLatch(dependencies.size());
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
         List<String> paths = new ArrayList<>();
         dependencies.forEach(
                 dependency -> executorService.execute(new DependencyFetchTask(
-                        repositoryURLManager, dependency, paths))
+                        repositoryURLManager, dependency, paths, countDownLatch))
         );
         try {
-            executorService.wait();
+            countDownLatch.await();
             this.logger.printLine(DEPENDENCIES_FETCH_SUCCESS.string());
             return paths;
         } catch (Exception e) {
             this.logger.printLine(DEPENDENCIES_FETCH_FAILURE.string() + ": %s", e.getMessage());
             throw new RuntimeException(e);
         } finally {
+            executorService.shutdown();
             this.dependencyDownloader.close();
         }
     }

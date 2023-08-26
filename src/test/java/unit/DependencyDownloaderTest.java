@@ -3,10 +3,9 @@ package unit;
 import dependency.DependencyDownloader;
 import dependency.DependencyResponseProcessor;
 import dependency.RepositoryURLManager;
+import helper.MockHttpClientProvider;
 import helper.StringLogger;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,13 +66,7 @@ public class DependencyDownloaderTest {
         when(processor.process(any(CloseableHttpResponse.class), anyString(), anyString()))
                 .thenReturn(fullPath);
 
-        CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-        CloseableHttpResponse httpResponse = mock(CloseableHttpResponse.class);
-        StatusLine statusLine = mock(StatusLine.class);
-        when(statusLine.getStatusCode()).thenReturn(statusCode);
-        when(httpResponse.getStatusLine()).thenReturn(statusLine);
-        when(httpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
-
+        CloseableHttpClient httpClient = MockHttpClientProvider.get(statusCode, "");
         RepositoryURLManager repositoryURLManager = new RepositoryURLManager(List.of(repository));
 
         DependencyDownloader downloader = new DependencyDownloader(logger,
