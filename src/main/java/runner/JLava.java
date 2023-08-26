@@ -12,9 +12,16 @@ import packager.JarPackager;
 import packager.Packager;
 import utility.FileGatherer;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 public class JLava {
+    public final static String JLAVA_DIRECTORY = "jlava";
+    public final static String CACHE_DIRECTORY = Paths
+            .get(JLAVA_DIRECTORY, ".cache").toString();
+    public final static String LOG_DIRECTORY = Paths
+            .get(JLAVA_DIRECTORY, ".log").toString();
     public final static int DEFAULT_CACHE_SIZE = 2048;
 
     public static void main(String[] args) {
@@ -31,13 +38,14 @@ public class JLava {
 
     private static void buildProject(String configFilePath) {
         try {
+            setUp();
             Logger logger = new OutputLogger((new TextOutputStreamProvider(
-                    Paths.get(".logger", "logs.txt").toString())).get()
+                    Paths.get(LOG_DIRECTORY, "logs.txt").toString())).get()
             );
             FileGatherer javaFileGatherer = new FileGatherer(logger, "java");
             ClassCompiler compiler = new ClassCompiler(logger, javaFileGatherer);
             DependencyResponseProcessor processor = new DependencyResponseProcessor(
-                    logger, DependencyCacheProvider.CACHE_DIRECTORY
+                    logger, CACHE_DIRECTORY
             );
             DependencyDownloader downloader = new DependencyDownloader(
                     logger, processor, HttpClients.createDefault()
@@ -58,6 +66,21 @@ public class JLava {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private static void setUp() throws Exception {
+        makeDirectory(JLAVA_DIRECTORY);
+        makeDirectory(CACHE_DIRECTORY);
+        makeDirectory(LOG_DIRECTORY);
+    }
+
+    private static void makeDirectory(String path) throws Exception {
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            if (!file.mkdir()) {
+                throw new IOException(path);
+            }
+        }
     }
 
 }
