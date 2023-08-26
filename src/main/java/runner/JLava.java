@@ -1,16 +1,12 @@
 package runner;
 
 import builder.ProjectBuilder;
+import builder.ProjectBuilderAssembler;
 import com.beust.jcommander.JCommander;
-import compiler.ClassCompiler;
-import dependency.*;
 import logger.Logger;
 import logger.OutputLogger;
 import logger.TextOutputStreamProvider;
 import org.apache.http.impl.client.HttpClients;
-import packager.JarPackager;
-import packager.Packager;
-import utility.FileGatherer;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,27 +35,15 @@ public class JLava {
     private static void buildProject(String configFilePath) {
         try {
             setUp();
-            Logger logger = new OutputLogger((new TextOutputStreamProvider(
-                    Paths.get(LOG_DIRECTORY, "logs.txt").toString())).get()
-            );
-            FileGatherer javaFileGatherer = new FileGatherer(logger, "java");
-            ClassCompiler compiler = new ClassCompiler(logger, javaFileGatherer);
-            DependencyResponseProcessor processor = new DependencyResponseProcessor(
-                    logger, CACHE_DIRECTORY
-            );
-            DependencyDownloader downloader = new DependencyDownloader(
-                    logger, processor, HttpClients.createDefault()
-            );
-            DependencyCacheManager cache = DependencyCacheProvider.getInstance(
-                    logger, DEFAULT_CACHE_SIZE
-            );
-            DependencyManager dependencyManager = new DependencyManager(
-                    logger, downloader, cache
-            );
-            Packager packager = new JarPackager(logger);
-            ProjectBuilder builder = new ProjectBuilder(
-                    logger, compiler, dependencyManager, packager
-            );
+            Logger logger = new OutputLogger(new TextOutputStreamProvider(
+                    Paths.get(LOG_DIRECTORY, "logs.txt").toString()).get());
+            ProjectBuilder builder = (new ProjectBuilderAssembler())
+                    .logger(logger)
+                    .cache(CACHE_DIRECTORY)
+                    .cacheSize(DEFAULT_CACHE_SIZE)
+                    .httpClient(HttpClients.createDefault())
+                    .config(configFilePath)
+                    .assemble();
             builder.build(configFilePath);
             logger.close();
         } catch(Exception e) {
