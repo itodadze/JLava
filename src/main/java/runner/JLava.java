@@ -6,12 +6,12 @@ import compiler.ClassCompiler;
 import dependency.*;
 import logger.Logger;
 import logger.OutputLogger;
+import logger.TextOutputStreamProvider;
 import org.apache.http.impl.client.HttpClients;
 import packager.JarPackager;
 import packager.Packager;
 import utility.FileGatherer;
 
-import java.io.*;
 import java.nio.file.Paths;
 
 public class JLava {
@@ -30,38 +30,32 @@ public class JLava {
     }
 
     private static void buildProject(String configFilePath) {
-
-        File logFile = new File(Paths.get(".logger", "logs.txt").toString());
-        if (logFile.exists() && logFile.delete()) {
-            try {
-                if (logFile.createNewFile()) {
-
-                    Logger logger = new OutputLogger(new FileOutputStream(logFile));
-                    FileGatherer javaFileGatherer = new FileGatherer(logger, "java");
-                    ClassCompiler compiler = new ClassCompiler(logger, javaFileGatherer);
-                    DependencyResponseProcessor processor = new DependencyResponseProcessor(
-                            logger, DependencyCacheProvider.CACHE_DIRECTORY
-                    );
-                    DependencyDownloader downloader = new DependencyDownloader(
-                            logger, processor, HttpClients.createDefault()
-                    );
-                    DependencyCacheManager cache = DependencyCacheProvider.getInstance(
-                            logger, DEFAULT_CACHE_SIZE
-                    );
-                    DependencyManager dependencyManager = new DependencyManager(
-                            logger, downloader, cache
-                    );
-                    Packager packager = new JarPackager(logger);
-                    ProjectBuilder builder = new ProjectBuilder(
-                            logger, compiler, dependencyManager, packager
-                    );
-                    builder.build(configFilePath);
-                    logger.close();
-
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            Logger logger = new OutputLogger((new TextOutputStreamProvider(
+                    Paths.get(".logger", "logs.txt").toString())).get()
+            );
+            FileGatherer javaFileGatherer = new FileGatherer(logger, "java");
+            ClassCompiler compiler = new ClassCompiler(logger, javaFileGatherer);
+            DependencyResponseProcessor processor = new DependencyResponseProcessor(
+                    logger, DependencyCacheProvider.CACHE_DIRECTORY
+            );
+            DependencyDownloader downloader = new DependencyDownloader(
+                    logger, processor, HttpClients.createDefault()
+            );
+            DependencyCacheManager cache = DependencyCacheProvider.getInstance(
+                    logger, DEFAULT_CACHE_SIZE
+            );
+            DependencyManager dependencyManager = new DependencyManager(
+                    logger, downloader, cache
+            );
+            Packager packager = new JarPackager(logger);
+            ProjectBuilder builder = new ProjectBuilder(
+                    logger, compiler, dependencyManager, packager
+            );
+            builder.build(configFilePath);
+            logger.close();
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         }
 
     }
