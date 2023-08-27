@@ -2,10 +2,17 @@ package utility;
 
 import java.io.File;
 
+/**
+ * A class responsible for recursively clearing out the content in directory.
+ */
 public class ClearableDirectory {
-
     private final File directory;
 
+    /**
+     * Constructs an instance of the ClearableDirectory.
+     *
+     * @param directory the directory to be cleared.
+     */
     public ClearableDirectory(File directory) {
         this.directory = directory;
     }

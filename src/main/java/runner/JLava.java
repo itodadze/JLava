@@ -12,14 +12,36 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+/**
+ * Main class of JLava project.
+ */
 public class JLava {
+
+    /**
+     * Project's directory path.
+     */
     public final static String JLAVA_DIRECTORY = "jlava";
+
+    /**
+     * Project's cache directory path.
+     */
     public final static String CACHE_DIRECTORY = Paths
             .get(JLAVA_DIRECTORY, ".cache").toString();
+
+    /**
+     * Project's log directory path.
+     */
     public final static String LOG_DIRECTORY = Paths
             .get(JLAVA_DIRECTORY, ".log").toString();
+
+    /**
+     * Default maximum cache size in megabytes.
+     */
     public final static int DEFAULT_CACHE_SIZE = 2048;
 
+    /**
+     * Runs the program.
+     */
     public static void main(String[] args) {
         JLavaCLIParameters cliParameters = new JLavaCLIParameters();
         JCommander jCommander = new JCommander.Builder()

@@ -4,8 +4,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+/**
+ * Provides an output stream from a text file.
+ */
 public class TextOutputStreamProvider implements OutputStreamProvider {
     private final String path;
+
+    /**
+     * Constructs an instance of TextOutputStreamProvider
+     *
+     * @param path  path to the text file.
+     */
     public TextOutputStreamProvider(String path) {
         this.path = path;
     }

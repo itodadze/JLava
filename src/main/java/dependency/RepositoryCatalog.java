@@ -1,5 +1,8 @@
 package dependency;
 
+/**
+ * A class which provides access to common repositories easily, via names.
+ */
 public enum RepositoryCatalog {
     MAVEN_CENTRAL("https://repo.maven.apache.org/maven2"),
     J_CENTER("https://jcenter.bintray.com"),

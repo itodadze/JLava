@@ -8,8 +8,17 @@ import java.util.List;
 import static logger.LogMessages.PACKAGING_ERROR;
 import static logger.LogMessages.PACKAGING_SUCCESS;
 
+/**
+ * A class responsible for packaging class files into a jar file.
+ */
 public class JarPackager implements  Packager{
     private final Logger logger;
+
+    /**
+     * Constructs an instance of JarPackager.
+     *
+     * @param logger    for logging messages and erors.
+     */
     public JarPackager(Logger logger) {
         this.logger = logger;
     }

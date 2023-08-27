@@ -6,6 +6,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 
+/**
+ * A class which is responsible for actually deleting dependencies when their paths
+ * are removed from cache.
+ */
 public class DependencyRemovalListener implements RemovalListener<String, File> {
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")

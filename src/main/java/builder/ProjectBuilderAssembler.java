@@ -10,6 +10,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import packager.JarPackager;
 import utility.FileGatherer;
 
+/**
+ * A class responsible for assembling a ProjectBuilder via builder pattern.
+ */
 public class ProjectBuilderAssembler {
     private Logger logger;
     private String cacheDirectory;
@@ -36,6 +39,13 @@ public class ProjectBuilderAssembler {
         this.configFilePath = path;
         return this;
     }
+
+    /**
+     * Assembles a ProjectBuilder based on previously set fields.
+     *
+     * @return a ProjectBuilder instance.
+     * @throws IllegalStateException if any of the required fields are missing.
+     */
     public ProjectBuilder assemble() throws IllegalStateException {
         if (!canAssemble()) throw new IllegalStateException(
                 "Required field is missing"

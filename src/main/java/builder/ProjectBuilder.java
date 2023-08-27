@@ -16,11 +16,23 @@ import java.util.List;
 import static dependency.RepositoryCatalog.MAVEN_CENTRAL;
 import static logger.LogMessages.*;
 
+/**
+ * A class responsible for building a user's Java project.
+ */
 public class ProjectBuilder {
     private final Logger logger;
     private final ClassCompiler classCompiler;
     private final DependencyManager dependencyManager;
     private final Packager packager;
+
+    /**
+     * Constructs a ProjectBuilder instance.
+     *
+     * @param logger            for logging messages and errors.
+     * @param classCompiler     for compiling java classes.
+     * @param dependencyManager for managing required dependencies.
+     * @param packager          for packaging the compiled classes.
+     */
     public ProjectBuilder(Logger logger, ClassCompiler classCompiler,
                           DependencyManager dependencyManager,
                           Packager packager) {
@@ -30,6 +42,11 @@ public class ProjectBuilder {
         this.packager = packager;
     }
 
+    /**
+     * Builds the project based on a provided configuration file path.
+     *
+     * @param configFilePath    path to the config file.
+     */
     public void build(String configFilePath) {
         try {
             Configuration configuration = new Configuration(configFilePath);
@@ -69,7 +86,7 @@ public class ProjectBuilder {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private File compileClasses(Configuration configuration, List<String> dependencies)
-        throws Exception {
+            throws Exception {
         List<String> sources = configuration.getList(Configuration.SOURCE);
         String output = configuration.getString(Configuration.OUTPUT);
         String tempDirectoryPath = Paths.get(output, "temp").toString();

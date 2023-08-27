@@ -7,15 +7,32 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * A class responsible for recursively gathering files.
+ */
 public class FileGatherer {
     private final Logger logger;
     private final String fileType;
 
+    /**
+     * Constructs an instance of FileGatherer.
+     *
+     * @param logger    for logging messages and errors.
+     * @param fileType  the type of files the class should gather.
+     */
     public FileGatherer(Logger logger, String fileType) {
         this.logger = logger;
         this.fileType = fileType;
     }
 
+    /**
+     * Searches and returns the paths of files in provided source files (can be
+     * directory or a file).
+     *
+     * @param sourceFiles   paths to the source files.
+     * @return              the paths of all the files in source files of the
+     *                      desired type.
+     */
     public List<String> filesFromSources(List<String> sourceFiles) {
         return sourceFiles.stream()
                           .map(File::new)

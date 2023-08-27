@@ -13,11 +13,22 @@ import java.util.stream.Stream;
 
 import static logger.LogMessages.*;
 
+/**
+ * A class responsible for downloading the dependencies.
+ */
 public class DependencyDownloader {
     private final Logger logger;
     private final DependencyResponseProcessor responseProcessor;
     private final CloseableHttpClient httpClient;
 
+    /**
+     * Constructs the instance of the DependencyDownloader class.
+     *
+     * @param logger            for logging messages and errors.
+     * @param responseProcessor for processing the response after the dependency is
+     *                          found.
+     * @param httpClient        for http communication.
+     */
     public DependencyDownloader(Logger logger,
                                 DependencyResponseProcessor responseProcessor,
                                 CloseableHttpClient httpClient) {
@@ -26,6 +37,16 @@ public class DependencyDownloader {
         this.httpClient = httpClient;
     }
 
+    /**
+     * Downloads and returns the path of the dependency.
+     *
+     * @param repositoryUrlManager  user-provided repositories in which the dependency
+     *                              is searched.
+     * @param dependency            the dependency.
+     * @return                      path to the downloaded dependency.
+     * @throws Exception            if the dependency could not be found or the
+     *                              processor had trouble processing it.
+     */
     public String download(RepositoryURLManager repositoryUrlManager, String dependency) throws Exception {
         Optional<Map.Entry<String,CloseableHttpResponse>> response = repositoryUrlManager
                 .firstSatisfying(repository -> tryRetrieveResponse(repository, dependency)
@@ -41,6 +62,9 @@ public class DependencyDownloader {
         }
     }
 
+    /**
+     * Closes the http client.
+     */
     public void close() {
         try {
             this.httpClient.close();

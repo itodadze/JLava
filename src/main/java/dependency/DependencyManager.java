@@ -12,14 +12,31 @@ import java.util.concurrent.Executors;
 import static logger.LogMessages.DEPENDENCIES_FETCH_FAILURE;
 import static logger.LogMessages.DEPENDENCIES_FETCH_SUCCESS;
 
+/**
+ * A class responsible for managing the dependencies.
+ */
 public class DependencyManager {
     private final static int NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
+
+    /**
+     * A task of analyzing one dependency.
+     */
     private class DependencyFetchTask implements Runnable {
         private static final Object LIST_LOCK = new Object();
         private final RepositoryURLManager repositoryURLManager;
         private final String dependency;
         private final List<String> paths;
         private final CountDownLatch latch;
+
+        /**
+         * Creates the task.
+         *
+         * @param repositoryURLManager  repositories in which to search dependency.
+         * @param dependency            the dependency.
+         * @param paths                 the list in which to save the path of the
+         *                              dependency.
+         * @param latch                 used for locking the list.
+         */
         public DependencyFetchTask(RepositoryURLManager repositoryURLManager,
                                    String dependency, List<String> paths,
                                    CountDownLatch latch) {
@@ -53,6 +70,13 @@ public class DependencyManager {
     private final DependencyDownloader dependencyDownloader;
     private final DependencyCacheManager dependencyCacheManager;
 
+    /**
+     * Constructs a DependencyManager instance.
+     *
+     * @param logger                    for logging messages and errors.
+     * @param dependencyDownloader      for downloading dependencies.
+     * @param dependencyCacheManager    for managing the dependency cache.
+     */
     public DependencyManager(Logger logger, DependencyDownloader dependencyDownloader,
                              DependencyCacheManager dependencyCacheManager) {
         this.logger = logger;
@@ -60,6 +84,14 @@ public class DependencyManager {
         this.dependencyCacheManager = dependencyCacheManager;
     }
 
+    /**
+     * Analyzes the provided dependencies and returns the paths to them from the cache.
+     * If they are not in cache already, they are downloaded.
+     *
+     * @param repositoryURLManager  the repositories in which to search.
+     * @param dependencies          the dependencies.
+     * @return                      a list of paths to the dependencies.
+     */
     public List<String> fetchPaths(RepositoryURLManager repositoryURLManager, List<String> dependencies) {
         CountDownLatch countDownLatch = new CountDownLatch(dependencies.size());
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
