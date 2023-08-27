@@ -96,11 +96,11 @@ public class DependencyManager {
         CountDownLatch countDownLatch = new CountDownLatch(dependencies.size());
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
         List<String> paths = new ArrayList<>();
-        dependencies.forEach(
-                dependency -> executorService.execute(new DependencyFetchTask(
-                        repositoryURLManager, dependency, paths, countDownLatch))
-        );
         try {
+            dependencies.forEach(
+                    dependency -> executorService.execute(new DependencyFetchTask(
+                            repositoryURLManager, dependency, paths, countDownLatch))
+            );
             countDownLatch.await();
             this.logger.printLine(DEPENDENCIES_FETCH_SUCCESS.string());
             return paths;

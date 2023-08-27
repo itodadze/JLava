@@ -6,7 +6,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -76,7 +75,7 @@ public class DependencyDownloader {
     private Stream<Map.Entry<String,CloseableHttpResponse>> tryRetrieveResponse(
             String repository, String dependency) {
 
-        HttpGet httpget = new HttpGet(Paths.get(repository, dependency).toString());
+        HttpGet httpget = new HttpGet(repository + "/" + dependency + ".jar");
         try {
             CloseableHttpResponse result = this.httpClient.execute(httpget);
             int statusCode = result.getStatusLine().getStatusCode();

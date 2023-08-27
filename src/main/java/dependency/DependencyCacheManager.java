@@ -49,7 +49,9 @@ public class DependencyCacheManager {
     public synchronized Optional<String> cached(RepositoryURLManager repositoryURLManager, String dependency) {
         return repositoryURLManager.firstSatisfying(
                 url -> {
-                    String path = Paths.get(this.cacheDirectory, url, dependency + ".jar").toString();
+                    String path = Paths.get(this.cacheDirectory,
+                            url.replace('/', '-').replace(':', '-'),
+                            dependency.replace('/', '.') + ".jar").toString();
                     if (cache.getIfPresent(path) != null) {
                         return Stream.of(path);
                     } else {

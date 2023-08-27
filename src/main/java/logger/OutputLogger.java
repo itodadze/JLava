@@ -20,7 +20,7 @@ public class OutputLogger implements Logger {
     }
 
     public synchronized void printLine(String format, Object... args) {
-        this.printWriter.printf(format, args);
+        this.printWriter.printf(format + "\n", args);
     }
 
     /**

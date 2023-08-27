@@ -43,10 +43,12 @@ public class DependencyResponseProcessor {
     public String process(CloseableHttpResponse response, String repository, String name) throws Exception {
         try {
             InputStream content = response.getEntity().getContent();
-            File repositoryDirectory = new File(Paths.get(this.dependencyDirectory, repository).toString());
+            String repositoryDirectoryName = repository.replace('/', '-').replace(':', '-');
+            File repositoryDirectory = new File(Paths.get(this.dependencyDirectory,
+                    repositoryDirectoryName).toString());
             if (!repositoryDirectory.exists()) repositoryDirectory.mkdir();
-            File jarFile = new File(Paths.get(this.dependencyDirectory, repository,
-                    name + ".jar").toString());
+            File jarFile = new File(Paths.get(this.dependencyDirectory, repositoryDirectoryName,
+                    name.replace('/', '.') + ".jar").toString());
             if (!jarFile.createNewFile()) {
                 this.logger.printLine(JAR_FILE_CREATION_ERROR.string() + ": %s", name);
             } else {
