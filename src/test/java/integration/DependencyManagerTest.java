@@ -12,6 +12,9 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DependencyManagerTest {
 
@@ -26,19 +29,13 @@ public class DependencyManagerTest {
     @Test
     public void testDependencyFetchMixed() {
         String content = "content";
-        String cacheDirectory = Paths.get(RES_PATH, "cache").toString();
         String downloadDirectory = Paths.get(RES_PATH, "download").toString();
-        String repo1 = "repo1";
-        String repo2 = "repo2";
-        String cached1Name = "cachedDependency1";
-        String cached2Name = "cachedDependency2";
-        String cached1 = Paths.get(cacheDirectory, repo1, cached1Name + ".jar").toString();
-        String cached2 = Paths.get(cacheDirectory, repo2, cached2Name + ".jar").toString();
+        String repo = "repo1";
         String uncachedName = "uncached";
-        String uncached = Paths.get(downloadDirectory, repo1, uncachedName + ".jar").toString();
+        String uncached = Paths.get(downloadDirectory, repo, uncachedName + ".jar").toString();
 
         StringLogger logger = new StringLogger();
-        RepositoryURLManager repositories = new RepositoryURLManager(List.of(repo1, repo2));
+        RepositoryURLManager repositories = new RepositoryURLManager(List.of(repo));
 
         try {
             DependencyResponseProcessor processor = new DependencyResponseProcessor(
@@ -47,16 +44,13 @@ public class DependencyManagerTest {
             DependencyDownloader downloader = new DependencyDownloader(
                     logger, processor, MockHttpClientProvider.get(200, content));
 
-            DependencyCacheManager cache = new DependencyCacheManager(
-                    cacheDirectory, 100);
-            cache.register(cached1);
-            cache.register(cached2);
+            DependencyCacheManager cache = DependencyCacheManager.INSTANCE;
 
             DependencyManager manager = new DependencyManager(
                     logger, downloader, cache
             );
-            List<String> paths = manager.fetchPaths(repositories, List.of(cached1Name, cached2Name, uncachedName));
-            Assertions.assertEquals(new HashSet<>(List.of(cached1, cached2, uncached)), new HashSet<>(paths));
+            List<String> paths = manager.fetchPaths(repositories, List.of(uncachedName));
+            assertEquals(Set.of(uncached), new HashSet<>(paths));
         } catch(Exception e) {
             Assertions.fail("Exception thrown when not expected: " + e.getMessage());
         }

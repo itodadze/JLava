@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ConfigurationTest {
     private static final String RES_PATH = Paths
             .get("src", "test", "resources", "configuration").toString();
@@ -41,7 +43,7 @@ public class ConfigurationTest {
     public void testConfigurationGetStringValid() {
         try {
             Configuration configuration = new Configuration(VALID_JSON_PATH);
-            Assertions.assertEquals(STRING_KEY, configuration.getString(STRING_KEY));
+            assertEquals(STRING_KEY, configuration.getString(STRING_KEY));
         } catch(Exception e) {
             Assertions.fail("Exception thrown when not expected");
         }
@@ -52,7 +54,7 @@ public class ConfigurationTest {
         try {
             Configuration configuration = new Configuration(VALID_JSON_PATH);
             List<String> expected = List.of("string1", "string2");
-            Assertions.assertEquals(expected, configuration.getList(LIST_KEY));
+            assertEquals(expected, configuration.getList(LIST_KEY));
         } catch(Exception e) {
             Assertions.fail("Exception thrown when not expected");
         }

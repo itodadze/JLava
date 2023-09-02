@@ -13,27 +13,6 @@ import static logger.LogMessages.CONFIG_NOT_FOUND;
  * A class responsible for providing easy access to the configuration file content.
  */
 public class Configuration {
-
-    /**
-     * Key for the project's name.
-     */
-    public static final String NAME = "name";
-    /**
-     * Key for the source files' paths.
-     */
-    public static final String SOURCE = "sourceDirs";
-    /**
-     * Key for the output directory path.
-     */
-    public static final String OUTPUT = "outputDir";
-    /**
-     * Key for the dependency repositories.
-     */
-    public static final String REPOSITORIES = "repositories";
-    /**
-     * Key for the dependency paths.
-     */
-    public static final String DEPENDENCIES = "dependencies";
     private final ObjectMapper mapper;
     private final Map<String, Object> map;
 
@@ -92,4 +71,11 @@ public class Configuration {
         }
     }
 
+    public List<String> getListOrDefault(String key, List<String> defaultList) throws Exception {
+        if (hasKey(key)) {
+            return getList(key);
+        } else {
+            return defaultList;
+        }
+    }
 }

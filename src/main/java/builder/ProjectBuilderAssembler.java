@@ -1,10 +1,7 @@
 package builder;
 
 import compiler.ClassCompiler;
-import dependency.DependencyCacheProvider;
-import dependency.DependencyDownloader;
-import dependency.DependencyManager;
-import dependency.DependencyResponseProcessor;
+import dependency.*;
 import logger.Logger;
 import org.apache.http.impl.client.CloseableHttpClient;
 import packager.JarPackager;
@@ -17,7 +14,6 @@ public class ProjectBuilderAssembler {
     private Logger logger;
     private String cacheDirectory;
     private CloseableHttpClient httpClient;
-    private int cacheSize = -1;
     private String configFilePath;
     public ProjectBuilderAssembler logger(Logger logger) {
         this.logger = logger;
@@ -29,10 +25,6 @@ public class ProjectBuilderAssembler {
     }
     public ProjectBuilderAssembler httpClient(CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
-        return this;
-    }
-    public ProjectBuilderAssembler cacheSize(int mbs) {
-        this.cacheSize = mbs;
         return this;
     }
     public ProjectBuilderAssembler config(String path) {
@@ -50,31 +42,25 @@ public class ProjectBuilderAssembler {
         if (!canAssemble()) throw new IllegalStateException(
                 "Required field is missing"
         );
-        return new ProjectBuilder(
-                this.logger,
-                new ClassCompiler(
-                        this.logger,
-                        new FileGatherer(this.logger, "java")
-                ),
-                new DependencyManager(
-                        this.logger,
-                        new DependencyDownloader(
-                                this.logger,
-                                new DependencyResponseProcessor(
-                                        this.logger,
-                                        this.cacheDirectory
-                                ),
-                                this.httpClient
-                        ),
-                        DependencyCacheProvider
-                                .getInstance(this.logger, this.cacheSize)
-                ),
+        CompilerInteractor compilerInteractor = new CompilerInteractor(
+                new ClassCompiler(this.logger, new FileGatherer(this.logger, "java"))
+        );
+        DependencyInteractor dependencyInteractor = new DependencyInteractor(
+              new DependencyManager(this.logger, new DependencyDownloader(
+                      this.logger, new DependencyResponseProcessor(this.logger,
+                      this.cacheDirectory), this.httpClient
+              ), DependencyCacheManager.INSTANCE)
+        );
+        PackagerInteractor packagerInteractor = new PackagerInteractor(
                 new JarPackager(this.logger)
+        );
+        return new ProjectBuilder(
+                this.logger, compilerInteractor,
+                dependencyInteractor, packagerInteractor
         );
     }
     private boolean canAssemble() {
         return this.logger != null && this.cacheDirectory != null &&
-                this.httpClient != null && this.cacheSize >= 0 &&
-                this.configFilePath != null;
+                this.httpClient != null && this.configFilePath != null;
     }
 }

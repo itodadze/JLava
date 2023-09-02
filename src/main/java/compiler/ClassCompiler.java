@@ -42,7 +42,7 @@ public class ClassCompiler {
         command.add("javac");
         if (!dependencies.isEmpty()) {
             command.add("-cp");
-            command.add(dependencyCommand(dependencies));
+            command.add(String.join(":", dependencies));
         }
         command.add("-d");
         command.add(outputDirectory);
@@ -61,15 +61,6 @@ public class ClassCompiler {
         } catch (Exception e) {
             this.logger.printLine(FILE_COMPILATION_FAILURE.string() + ": %s", e.getMessage());
         }
-    }
-
-    private String dependencyCommand(List<String> dependencies) {
-        assert !dependencies.isEmpty();
-        StringBuilder result = new StringBuilder(dependencies.get(0));
-        for (int i = 1; i < dependencies.size(); i++) {
-            result.append(":").append(dependencies.get(i));
-        }
-        return result.toString();
     }
 
 }

@@ -12,6 +12,6 @@ public class DependencyWeigher implements Weigher<String, File> {
     private final static long BYTE_TO_MB = 1024 * 1024;
     @Override
     public @NonNegative int weigh(String s, File file) {
-        return (int) (file.length() / BYTE_TO_MB) + 1;
+        return Math.toIntExact((file.length() / BYTE_TO_MB) + 1);
     }
 }

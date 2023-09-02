@@ -17,27 +17,15 @@ import java.nio.file.Paths;
  */
 public class JLava {
 
-    /**
-     * Project's directory path.
-     */
     public final static String JLAVA_DIRECTORY = "jlava";
 
-    /**
-     * Project's cache directory path.
-     */
     public final static String CACHE_DIRECTORY = Paths
             .get(JLAVA_DIRECTORY, ".cache").toString();
 
-    /**
-     * Project's log directory path.
-     */
     public final static String LOG_DIRECTORY = Paths
             .get(JLAVA_DIRECTORY, ".log").toString();
 
-    /**
-     * Default maximum cache size in megabytes.
-     */
-    public final static int DEFAULT_CACHE_SIZE = 2048;
+    public final static int DEFAULT_CACHE_SIZE_MB = 2048;
 
     /**
      * Runs the program.
@@ -62,7 +50,6 @@ public class JLava {
             ProjectBuilder builder = (new ProjectBuilderAssembler())
                     .logger(logger)
                     .cache(CACHE_DIRECTORY)
-                    .cacheSize(DEFAULT_CACHE_SIZE)
                     .httpClient(HttpClients.createDefault())
                     .config(configFilePath)
                     .assemble();

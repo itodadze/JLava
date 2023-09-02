@@ -2,6 +2,8 @@ package config;
 
 import java.util.List;
 
+import static config.ConfigurationKey.*;
+
 /**
  * A class responsible for validating the configuration file.
  */
@@ -20,10 +22,10 @@ public class ConfigurationValidator {
          */
         public static ConfigurationValidator createDefault() {
             return new ConfigurationValidator(
-                    List.of(Configuration.NAME,
-                            Configuration.SOURCE,
-                            Configuration.OUTPUT,
-                            Configuration.DEPENDENCIES)
+                    List.of(NAME.key(),
+                            SOURCE.key(),
+                            OUTPUT.key(),
+                            DEPENDENCIES.key())
             );
         }
     }
