@@ -4,9 +4,6 @@ import java.util.List;
 
 import static config.ConfigurationKey.*;
 
-/**
- * A class responsible for validating the configuration file.
- */
 public class ConfigurationValidator {
 
     /**

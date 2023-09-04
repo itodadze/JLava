@@ -7,7 +7,6 @@ import helper.MockHttpClientProvider;
 import helper.StringLogger;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -15,6 +14,7 @@ import java.util.List;
 
 import static logger.LogMessages.DEPENDENCY_DOWNLOAD_SUCCESS;
 import static logger.LogMessages.DEPENDENCY_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -31,12 +31,12 @@ public class DependencyDownloaderTest {
         try {
             String path = getDownloadedDependencyPath(dependencyName, outputDirectory,
                     repository, logger, 200);
-            Assertions.assertEquals(Paths.get(outputDirectory, repository,
+            assertEquals(Paths.get(outputDirectory, repository,
                     dependencyName + ".jar").toString(), path);
-            Assertions.assertTrue(logger.getLog().startsWith(
+            assertTrue(logger.getLog().startsWith(
                     DEPENDENCY_DOWNLOAD_SUCCESS.string() + ": " + dependencyName));
         } catch (Exception e) {
-            Assertions.fail("Exception not expected: " + e.getMessage());
+            fail("Exception not expected: " + e.getMessage());
         }
     }
 
@@ -48,9 +48,9 @@ public class DependencyDownloaderTest {
         StringLogger logger = new StringLogger();
         try {
             getDownloadedDependencyPath(dependencyName, outputDirectory, repository, logger, 400);
-            Assertions.fail("Exception not thrown when expected");
+            fail("Exception not thrown when expected");
         } catch (Exception e) {
-            Assertions.assertTrue(logger.getLog().startsWith(
+            assertTrue(logger.getLog().startsWith(
                     DEPENDENCY_NOT_FOUND.string() + ": " + dependencyName));
         }
     }

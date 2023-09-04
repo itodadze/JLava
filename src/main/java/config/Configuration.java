@@ -48,7 +48,7 @@ public class Configuration {
             return this.mapper.convertValue(
                     this.map.get(key), String.class
             );
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new Exception(e);
         }
     }
@@ -66,11 +66,20 @@ public class Configuration {
                     this.map.get(key), new TypeReference<>() {
                     }
             );
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new Exception(e);
         }
     }
 
+    /**
+     * Get the value as a list of strings, or default if not found.
+     *
+     * @param key           the key value.
+     * @param defaultList   default value if key is not found.
+     * @return              the value as a list of strings.
+     * @throws Exception    if the key was found but its value could not be converted
+     *                      to a list.
+     */
     public List<String> getListOrDefault(String key, List<String> defaultList) throws Exception {
         if (hasKey(key)) {
             return getList(key);

@@ -2,13 +2,14 @@ package unit;
 
 import dependency.DependencyCacheManager;
 import dependency.RepositoryURLManager;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static runner.JLava.CACHE_DIRECTORY;
 
 public class DependencyCacheManagerTest {
@@ -23,8 +24,8 @@ public class DependencyCacheManagerTest {
         Optional<String> result = manager.cached(
                 new RepositoryURLManager(List.of(repository)), dependency
         );
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals(path, result.get());
+        assertTrue(result.isPresent());
+        assertEquals(path, result.get());
     }
 
 }

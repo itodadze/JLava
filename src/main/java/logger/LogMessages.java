@@ -13,6 +13,8 @@ public enum LogMessages {
     DEPENDENCY_NOT_FOUND("Could not download dependency"),
     FILE_COMPILATION_FAILURE("File compilation error"),
     FILE_COMPILATION_SUCCESS("Files compiled successfully"),
+    FILE_CREATION_ERROR("Could not create file"),
+    FILE_DELETION_ERROR("Could not delete file"),
     FILE_PATH_NOT_FOUND("Non-existing file path"),
     HTTP_ERROR("Http error"),
     JAR_FILE_CREATION_ERROR("Could not create jar file"),

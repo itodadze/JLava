@@ -11,10 +11,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static runner.JLava.CACHE_DIRECTORY;
+import static utility.Namer.DIRECTORY;
+import static utility.Namer.JAR;
 
-/**
- * A class responsible for managing the jlava's dependency cache.
- */
 public enum DependencyCacheManager {
     INSTANCE;
 
@@ -54,9 +53,8 @@ public enum DependencyCacheManager {
     }
 
     private Stream<String> cachedWithRepository(String repositoryUrl, String dependency) {
-        String path = Paths.get(this.cacheDirectory,
-                repositoryUrl.replace('/', '-').replace(':', '-'),
-                dependency.replace('/', '.') + ".jar").toString();
+        String path = Paths.get(this.cacheDirectory, DIRECTORY.name(repositoryUrl),
+                JAR.name(dependency)).toString();
         if (cache.getIfPresent(path) != null) {
             return Stream.of(path);
         } else {

@@ -1,10 +1,9 @@
 package unit;
 
-import utility.ClearableDirectory;
+import utility.Directory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
 import utility.FileGatherer;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +11,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ClassCompilerTest {
@@ -21,22 +21,22 @@ public class ClassCompilerTest {
 
     @BeforeEach
     public void clearOutputDirectories() {
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "empty", "output")
-                .toString()))).clearContent();
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "unbranched", "output")
-                .toString()))).clearContent();
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "branched", "output")
-                .toString()))).clearContent();
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "dependency", "output")
-                .toString()))).clearContent();
+        try {
+            (new Directory(Paths.get(RES_PATH, "empty", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "unbranched", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "branched", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "dependency", "output").toFile())).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @Test
     public void testCompilerEmptyDirectory() {
         File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of(),
                 List.of());
-        Assertions.assertNotNull(outputInnerFiles);
-        Assertions.assertEquals(0, outputInnerFiles.length);
+        assertNotNull(outputInnerFiles);
+        assertEquals(0, outputInnerFiles.length);
     }
 
     @Test
@@ -50,10 +50,10 @@ public class ClassCompilerTest {
 
         File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", List.of(),
                 expectedJavaFiles);
-        Assertions.assertNotNull(outputInnerFiles);
-        Assertions.assertEquals(1, outputInnerFiles.length);
+        assertNotNull(outputInnerFiles);
+        assertEquals(1, outputInnerFiles.length);
 
-        Assertions.assertTrue((new File(Paths.get(outputInnerDirectory, "Class.class")
+        assertTrue((new File(Paths.get(outputInnerDirectory, "Class.class")
                 .toString())).exists());
     }
 
@@ -70,12 +70,12 @@ public class ClassCompilerTest {
 
         File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", List.of(),
                 expectedJavaFiles);
-        Assertions.assertNotNull(outputInnerFiles);
-        Assertions.assertEquals(1, outputInnerFiles.length);
+        assertNotNull(outputInnerFiles);
+        assertEquals(1, outputInnerFiles.length);
 
-        Assertions.assertTrue((new File(Paths.get(outputInnerDirectory, "dir1",
+        assertTrue((new File(Paths.get(outputInnerDirectory, "dir1",
                 "Class1.class").toString())).exists());
-        Assertions.assertTrue((new File(Paths.get(outputInnerDirectory, "dir2",
+        assertTrue((new File(Paths.get(outputInnerDirectory, "dir2",
                 "Class2.class").toString())).exists());
     }
 
@@ -91,8 +91,8 @@ public class ClassCompilerTest {
         File[] outputInnerFiles = getCompiledInnerOutputFiles("dependency", dependencies,
                 expectedJavaFiles);
 
-        Assertions.assertNotNull(outputInnerFiles);
-        Assertions.assertEquals(1, outputInnerFiles.length);
+        assertNotNull(outputInnerFiles);
+        assertEquals(1, outputInnerFiles.length);
     }
 
     @Test
@@ -105,8 +105,8 @@ public class ClassCompilerTest {
         File[] outputInnerFiles = getCompiledInnerOutputFiles("lacking", List.of(),
                 expectedJavaFiles);
 
-        Assertions.assertNotNull(outputInnerFiles);
-        Assertions.assertEquals(0, outputInnerFiles.length);
+        assertNotNull(outputInnerFiles);
+        assertEquals(0, outputInnerFiles.length);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

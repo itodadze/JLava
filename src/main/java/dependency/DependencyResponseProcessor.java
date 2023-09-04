@@ -2,6 +2,7 @@ package dependency;
 
 import logger.Logger;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import utility.Directory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,6 +12,8 @@ import java.nio.file.Paths;
 
 import static logger.LogMessages.JAR_FILE_CREATION_ERROR;
 import static logger.LogMessages.JAR_FILE_PROCESS_ERROR;
+import static utility.Namer.DIRECTORY;
+import static utility.Namer.JAR;
 
 /**
  * A class responsible for processing the http response when dependency is found.
@@ -19,12 +22,6 @@ public class DependencyResponseProcessor {
     private final Logger logger;
     private final String dependencyDirectory;
 
-    /**
-     * Constructs an instance of DependencyResponseProcessor.
-     *
-     * @param logger                for logging messages and errors.
-     * @param dependencyDirectory   path to where dependencies are saved.
-     */
     public DependencyResponseProcessor(Logger logger, String dependencyDirectory) {
         this.logger = logger;
         this.dependencyDirectory = dependencyDirectory;
@@ -39,32 +36,32 @@ public class DependencyResponseProcessor {
      * @return              the path of the saved dependency.
      * @throws Exception    If the processing is unsuccessful.
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public String process(CloseableHttpResponse response, String repository, String name) throws Exception {
         try {
             InputStream content = response.getEntity().getContent();
-            String repositoryDirectoryName = repository.replace('/', '-').replace(':', '-');
-            File repositoryDirectory = new File(Paths.get(this.dependencyDirectory,
-                    repositoryDirectoryName).toString());
-            if (!repositoryDirectory.exists()) repositoryDirectory.mkdir();
-            File jarFile = new File(Paths.get(this.dependencyDirectory, repositoryDirectoryName,
-                    name.replace('/', '.') + ".jar").toString());
+            new Directory(Paths.get(this.dependencyDirectory, DIRECTORY.name(repository))
+                    .toFile()).makeIfNotExists();
+            File jarFile = Paths.get(this.dependencyDirectory, DIRECTORY.name(repository),
+                    JAR.name(name)).toFile();
             if (!jarFile.createNewFile()) {
                 this.logger.printLine(JAR_FILE_CREATION_ERROR.string() + ": %s", name);
             } else {
-                try (OutputStream outputStream = new FileOutputStream(jarFile)) {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = content.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                }
+                saveInFile(jarFile, content);
             }
             return jarFile.getPath();
-        } catch(Exception e) {
+        } catch (Exception e) {
             this.logger.printLine(JAR_FILE_PROCESS_ERROR.string() + ": %s", e.getMessage());
             throw e;
         }
     }
 
+    private void saveInFile(File file, InputStream content) throws Exception {
+        try (OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = content.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        }
+    }
 }

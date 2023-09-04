@@ -1,7 +1,6 @@
 package unit;
 
 import dependency.RepositoryURLManager;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,6 +8,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static dependency.RepositoryCatalog.MAVEN_CENTRAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RepositoryURLManagerTest {
 
@@ -16,8 +17,8 @@ public class RepositoryURLManagerTest {
     public void testMixedRepositoriesCustom() {
         Optional<String> result = getFromMixedRepository("J_CENTER",
                 "custom", "custom");
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals("custom", result.get());
+        assertTrue(result.isPresent());
+        assertEquals("custom", result.get());
     }
 
     @Test
@@ -26,8 +27,8 @@ public class RepositoryURLManagerTest {
 
         Optional<String> result = getFromMixedRepository("MAVEN_CENTRAL",
                 "other", MAVEN_CENTRAL.url());
-        Assertions.assertTrue(result.isPresent());
-        Assertions.assertEquals(repositoryInCatalogUrl, result.get());
+        assertTrue(result.isPresent());
+        assertEquals(repositoryInCatalogUrl, result.get());
     }
 
     private Optional<String> getFromMixedRepository(String inCatalog, String custom,

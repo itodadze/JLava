@@ -44,7 +44,7 @@ public class ProjectBuilder {
                 );
             }
             buildAccordingTo(configuration);
-        } catch(Exception e) {
+        } catch (Exception e) {
             this.logger.printLine(JSON_FILE_ERROR.string() + ": %s", e.getMessage());
         }
     }
@@ -54,7 +54,7 @@ public class ProjectBuilder {
             List<String> dependencies = this.dependencyInteractor.fetchPaths(configuration);
             File tempDirectory = this.compilerInteractor.compileClasses(configuration, dependencies);
             this.packagerInteractor.packageClasses(configuration, tempDirectory);
-        } catch(Exception e) {
+        } catch (Exception e) {
             this.logger.printLine(BUILD_ERROR.string() + ": %s", e.getMessage());
         }
     }

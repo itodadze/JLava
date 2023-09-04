@@ -1,16 +1,18 @@
 package unit;
 
 import helper.StringLogger;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import packager.JarPackager;
-import utility.ClearableDirectory;
+import utility.Directory;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.jar.JarFile;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class JarPackagerTest {
 
@@ -24,10 +26,12 @@ public class JarPackagerTest {
     }
 
     private void clearJarFiles() {
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "basic", "jar")
-                .toString()))).clearContent();
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "branched", "jar")
-                .toString()))).clearContent();
+        try {
+            (new Directory(Paths.get(RES_PATH, "basic", "jar").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "branched", "jar").toFile())).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -42,7 +46,7 @@ public class JarPackagerTest {
             (new File(Paths.get(RES_PATH, "branched", "temp", "branch", "Class.class")
                     .toString())).createNewFile();
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected: " + e.getMessage());
+            fail("Exception thrown when not expected: " + e.getMessage());
         }
     }
 
@@ -50,9 +54,9 @@ public class JarPackagerTest {
     public void testJarPackagerBasic() {
         try(JarFile jar = new JarFile(makeJarFile("basic", "basic"))) {
             List<String> jarInnerClassesPaths = List.of("Class.class", "Class1.class");
-            jarInnerClassesPaths.forEach(path -> Assertions.assertNotNull(jar.getJarEntry(path)));
+            jarInnerClassesPaths.forEach(path -> assertNotNull(jar.getJarEntry(path)));
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected: " + e.getMessage());
+            fail("Exception thrown when not expected: " + e.getMessage());
         }
     }
 
@@ -61,9 +65,9 @@ public class JarPackagerTest {
         try (JarFile jar = new JarFile(makeJarFile("branch", "branched"))) {
             List<String> jarInnerClassesPaths = List.of("Class.class", Paths.get("branch",
                     "Class.class").toString());
-            jarInnerClassesPaths.forEach(path -> Assertions.assertNotNull(jar.getJarEntry(path)));
+            jarInnerClassesPaths.forEach(path -> assertNotNull(jar.getJarEntry(path)));
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected: " + e.getMessage());
+            fail("Exception thrown when not expected: " + e.getMessage());
         }
     }
 

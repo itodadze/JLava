@@ -3,18 +3,17 @@ package integration;
 import dependency.*;
 import helper.MockHttpClientProvider;
 import helper.StringLogger;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import utility.ClearableDirectory;
+import utility.Directory;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DependencyManagerTest {
 
@@ -22,8 +21,11 @@ public class DependencyManagerTest {
 
     @BeforeEach
     public void cleanDownloads() {
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "download", "repo1")
-                .toString()))).clearContent();
+        try {
+            (new Directory(Paths.get(RES_PATH, "download", "repo1").toFile())).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @Test
@@ -52,7 +54,7 @@ public class DependencyManagerTest {
             List<String> paths = manager.fetchPaths(repositories, List.of(uncachedName));
             assertEquals(Set.of(uncached), new HashSet<>(paths));
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected: " + e.getMessage());
+            fail("Exception thrown when not expected: " + e.getMessage());
         }
     }
 

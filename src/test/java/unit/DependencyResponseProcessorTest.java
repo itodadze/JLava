@@ -1,20 +1,20 @@
 package unit;
 
 import dependency.DependencyResponseProcessor;
-import utility.ClearableDirectory;
+import utility.Directory;
 import helper.FileContentProvider;
 import helper.StringLogger;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +25,11 @@ public class DependencyResponseProcessorTest {
 
     @BeforeEach
     public void clearOutputDirectories() {
-        (new ClearableDirectory(new File(Paths.get(RES_PATH, "basic").toString()))).clearContent();
+        try {
+            (new Directory(Paths.get(RES_PATH, "basic").toFile())).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @Test
@@ -48,11 +52,11 @@ public class DependencyResponseProcessorTest {
             String path = processor.process(httpResponse, repository, name);
             httpResponse.close();
 
-            Assertions.assertEquals(Paths.get(outputDirectory, repository, name + ".jar")
+            assertEquals(Paths.get(outputDirectory, repository, name + ".jar")
                     .toString(), path);
-            Assertions.assertEquals(content, (new FileContentProvider(path)).getContent());
+            assertEquals(content, (new FileContentProvider(path)).getContent());
         } catch (Exception e) {
-            Assertions.fail("Unexpected exception occurred: " + e.getMessage());
+            fail("Unexpected exception occurred: " + e.getMessage());
         }
     }
 }

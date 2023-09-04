@@ -12,9 +12,6 @@ import java.util.stream.Stream;
 
 import static logger.LogMessages.*;
 
-/**
- * A class responsible for downloading the dependencies.
- */
 public class DependencyDownloader {
     private final Logger logger;
     private final DependencyResponseProcessor responseProcessor;
@@ -67,14 +64,13 @@ public class DependencyDownloader {
     public void close() {
         try {
             this.httpClient.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             this.logger.printLine(HTTP_ERROR.string() + ": %s", e.getMessage());
         }
     }
 
     private Stream<Map.Entry<String,CloseableHttpResponse>> tryRetrieveResponse(
             String repository, String dependency) {
-
         HttpGet httpget = new HttpGet(repository + "/" + dependency + ".jar");
         try {
             CloseableHttpResponse result = this.httpClient.execute(httpget);

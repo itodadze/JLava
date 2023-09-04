@@ -7,16 +7,15 @@ import logger.Logger;
 import logger.OutputLogger;
 import logger.TextOutputStreamProvider;
 import org.apache.http.impl.client.HttpClients;
+import utility.Directory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
  * Main class of JLava project.
  */
 public class JLava {
-
     public final static String JLAVA_DIRECTORY = "jlava";
 
     public final static String CACHE_DIRECTORY = Paths
@@ -55,7 +54,7 @@ public class JLava {
                     .assemble();
             builder.build(configFilePath);
             logger.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -68,12 +67,7 @@ public class JLava {
     }
 
     private static void makeDirectory(String path) throws Exception {
-        File file = new File(path);
-        if (!file.isDirectory()) {
-            if (!file.mkdir()) {
-                throw new IOException(path);
-            }
-        }
+        new Directory(new File(path)).make();
     }
 
 }

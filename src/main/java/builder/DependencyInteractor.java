@@ -11,7 +11,6 @@ import static config.ConfigurationKey.REPOSITORIES;
 import static dependency.RepositoryCatalog.MAVEN_CENTRAL;
 
 public class DependencyInteractor {
-
     private final DependencyManager dependencyManager;
 
     public DependencyInteractor(DependencyManager dependencyManager) {

@@ -9,9 +9,6 @@ import java.util.List;
 import static logger.LogMessages.FILE_COMPILATION_FAILURE;
 import static logger.LogMessages.FILE_COMPILATION_SUCCESS;
 
-/**
- * A class responsible for compiling java files.
- */
 public class ClassCompiler {
     private final Logger logger;
     private final FileGatherer fileGatherer;

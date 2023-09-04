@@ -2,14 +2,16 @@ package unit;
 
 import helper.FileContentProvider;
 import logger.OutputLogger;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import utility.ClearableDirectory;
+import utility.Directory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class OutputLoggerTest {
 
@@ -18,7 +20,11 @@ public class OutputLoggerTest {
 
     @BeforeEach
     public void clearPreviousLogs() {
-        new ClearableDirectory(new File(RES_PATH)).clearContent();
+        try {
+            new Directory(new File(RES_PATH)).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @Test
@@ -32,9 +38,9 @@ public class OutputLoggerTest {
             OutputLogger logger = new OutputLogger(new FileOutputStream(file));
             logger.printLine(text);
             logger.close();
-            Assertions.assertEquals(text + "\n", (new FileContentProvider(path)).getContent());
+            assertEquals(text + "\n", (new FileContentProvider(path)).getContent());
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected: " + e.getMessage());
+            fail("Exception thrown when not expected: " + e.getMessage());
         }
     }
 

@@ -17,7 +17,7 @@ public class JarPackager implements  Packager{
     /**
      * Constructs an instance of JarPackager.
      *
-     * @param logger    for logging messages and erors.
+     * @param logger    for logging messages and errors.
      */
     public JarPackager(Logger logger) {
         this.logger = logger;

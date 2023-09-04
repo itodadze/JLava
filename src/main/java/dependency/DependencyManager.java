@@ -47,7 +47,8 @@ public class DependencyManager {
         }
         @Override
         public void run() {
-            Optional<String> cached = dependencyCacheManager.cached(this.repositoryURLManager, this.dependency);
+            Optional<String> cached = dependencyCacheManager
+                    .cached(this.repositoryURLManager, this.dependency);
             String path;
             if (cached.isPresent()) {
                 path = cached.get();
@@ -60,7 +61,11 @@ public class DependencyManager {
                     throw new RuntimeException(e);
                 }
             }
-            synchronized(LIST_LOCK) {
+            addToList(path);
+        }
+
+        private void addToList(String path) {
+            synchronized (LIST_LOCK) {
                 this.paths.add(path);
             }
             this.latch.countDown();

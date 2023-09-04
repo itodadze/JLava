@@ -2,10 +2,11 @@ package unit;
 
 import config.Configuration;
 import config.ConfigurationValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationValidatorTest {
 
@@ -18,9 +19,9 @@ public class ConfigurationValidatorTest {
     public void testConfigurationValidatorValid() {
         ConfigurationValidator validator = ConfigurationValidator.Factory.createDefault();
         try {
-            Assertions.assertTrue(validator.validate(new Configuration(VALID_REQ_MET_JSON_PATH)));
+            assertTrue(validator.validate(new Configuration(VALID_REQ_MET_JSON_PATH)));
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected");
+            fail("Exception thrown when not expected");
         }
     }
 
@@ -28,9 +29,9 @@ public class ConfigurationValidatorTest {
     public void testConfigurationValidatorInvalid() {
         ConfigurationValidator validator = ConfigurationValidator.Factory.createDefault();
         try {
-            Assertions.assertFalse(validator.validate(new Configuration(VALID_JSON_PATH)));
+            assertFalse(validator.validate(new Configuration(VALID_JSON_PATH)));
         } catch(Exception e) {
-            Assertions.fail("Exception thrown when not expected");
+            fail("Exception thrown when not expected");
         }
     }
 
