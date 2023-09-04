@@ -2,6 +2,7 @@ package builder;
 
 import config.Configuration;
 import config.ConfigurationValidator;
+import config.JsonConfiguration;
 import logger.Logger;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class ProjectBuilder {
      */
     public void build(String configFilePath) {
         try {
-            Configuration configuration = new Configuration(configFilePath);
+            Configuration configuration = new JsonConfiguration(configFilePath);
             boolean validated = ConfigurationValidator.Factory
                     .createDefault().validate(configuration);
             if (!validated) {
