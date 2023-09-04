@@ -7,9 +7,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import packager.JarPackager;
 import utility.FileGatherer;
 
-/**
- * A class responsible for assembling a ProjectBuilder via builder pattern.
- */
 public class ProjectBuilderAssembler {
     private Logger logger;
     private String cacheDirectory;
