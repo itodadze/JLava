@@ -80,4 +80,26 @@ public class JsonConfigurationTest {
         }
     }
 
+    @Test
+    public void testGetListOrDefaultValidDefault() {
+        try {
+            Configuration configuration = new JsonConfiguration(VALID_JSON_PATH);
+            List<String> expected = List.of("expected");
+            List<String> result = configuration.getListOrDefault("random", expected);
+            assertEquals(expected, result);
+        } catch(Exception ignored) {
+            fail("Exception thrown when expected");
+        }
+    }
+
+    @Test
+    public void testGetListOrDefaultInvalid() {
+        try {
+            Configuration configuration = new JsonConfiguration(VALID_JSON_PATH);
+            configuration.getListOrDefault(STRING_KEY, List.of());
+            fail("Exception not thrown when expected");
+        } catch(Exception ignored) {
+        }
+    }
+
 }
