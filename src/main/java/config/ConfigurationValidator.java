@@ -20,7 +20,7 @@ public class ConfigurationValidator {
         public static ConfigurationValidator createDefault() {
             return new ConfigurationValidator(
                     List.of(NAME.key(),
-                            SOURCE.key(),
+                            SOURCES.key(),
                             OUTPUT.key(),
                             DEPENDENCIES.key())
             );

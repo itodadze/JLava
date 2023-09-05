@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static config.ConfigurationKey.OUTPUT;
-import static config.ConfigurationKey.SOURCE;
+import static config.ConfigurationKey.SOURCES;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CompilerInteractorTest {
@@ -38,7 +38,7 @@ public class CompilerInteractorTest {
         List<String> sources = List.of(Paths.get(RES_PATH, "src").toString());
         String output = Paths.get(RES_PATH, "dest").toString();
         Configuration configuration = new MapConfiguration(
-                Map.of(OUTPUT.key(), output), Map.of(SOURCE.key(), sources)
+                Map.of(OUTPUT.key(), output), Map.of(SOURCES.key(), sources)
         );
         CompilerInteractor interactor = new CompilerInteractor(new ClassCompiler(
                 new StringLogger(), new FileGatherer(new StringLogger(), "java")

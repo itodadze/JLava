@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static config.ConfigurationKey.OUTPUT;
-import static config.ConfigurationKey.SOURCE;
+import static config.ConfigurationKey.SOURCES;
 
 public class CompilerInteractor {
     private final static String TEMP_DIRECTORY = "temp";
@@ -26,7 +26,7 @@ public class CompilerInteractor {
      */
     public File compileClasses(Configuration configuration, List<String> dependencies)
             throws Exception {
-        List<String> sources = configuration.getList(SOURCE.key());
+        List<String> sources = configuration.getList(SOURCES.key());
         String output = configuration.getString(OUTPUT.key());
         File tempDirectory = Paths.get(output, TEMP_DIRECTORY).toFile();
         (new Directory(tempDirectory)).make();

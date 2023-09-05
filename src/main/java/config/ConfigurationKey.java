@@ -2,7 +2,7 @@ package config;
 
 public enum ConfigurationKey {
     NAME("name"),
-    SOURCE("sourceDirs"),
+    SOURCES("sourceDirs"),
     OUTPUT("outputDir"),
     REPOSITORIES("repositories"),
     DEPENDENCIES("dependencies");
