@@ -3,9 +3,11 @@ package dependency;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import runner.JLava;
+import utility.FileGatherer;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -44,12 +46,14 @@ public enum DependencyCacheManager {
     }
 
     private Cache<String, File> createCache() {
-        return Caffeine.newBuilder()
+        Cache<String, File> initialCache = Caffeine.newBuilder()
                 .maximumWeight(JLava.DEFAULT_CACHE_SIZE_MB)
                 .expireAfterAccess(CACHE_AUTO_EVICTION_DAYS, TimeUnit.DAYS)
                 .removalListener(new DependencyRemovalListener())
                 .weigher(new DependencyWeigher())
                 .build();
+        initialFillCache(initialCache);
+        return initialCache;
     }
 
     private Stream<String> cachedWithRepository(String repositoryUrl, String dependency) {
@@ -60,5 +64,10 @@ public enum DependencyCacheManager {
         } else {
             return Stream.empty();
         }
+    }
+
+    private void initialFillCache(Cache<String, File> initialCache) {
+        (new FileGatherer(null, "jar")).filesFromSources(List.of(cacheDirectory))
+                .forEach(path -> initialCache.put(path, new File(path)));
     }
 }

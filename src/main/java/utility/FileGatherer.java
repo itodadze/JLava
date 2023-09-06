@@ -42,7 +42,9 @@ public class FileGatherer {
 
     private Stream<String> filesIn(File file) {
         if (!file.exists()) {
-            this.logger.printLine(LogMessages.FILE_PATH_NOT_FOUND.string() + ": %s", file.getName());
+            if (this.logger != null) {
+                this.logger.printLine(LogMessages.FILE_PATH_NOT_FOUND.string() + ": %s", file.getName());
+            }
         } else {
             if (file.isDirectory()) {
                 return Stream.ofNullable(file.listFiles())

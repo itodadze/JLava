@@ -43,6 +43,8 @@ public class JarPackagerTest {
                     .toString())).createNewFile();
             (new File(Paths.get(RES_PATH, "branched", "temp", "Class.class")
                     .toString())).createNewFile();
+            (new File(Paths.get(RES_PATH, "branched", "temp", "branch")
+                    .toString())).mkdir();
             (new File(Paths.get(RES_PATH, "branched", "temp", "branch", "Class.class")
                     .toString())).createNewFile();
         } catch(Exception e) {

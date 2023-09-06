@@ -1,7 +1,9 @@
 package packager;
 
 import logger.Logger;
+import utility.Directory;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -33,10 +35,8 @@ public class JarPackager implements  Packager{
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
             if (exitCode == 0) {
+                removeClassesOutsideJar(source);
                 this.logger.printLine(PACKAGING_SUCCESS.string());
-                if (removeClassesOutsideJar(source) != 0) {
-                    this.logger.printLine(PACKAGING_ERROR.string() + ": exit code: %d", exitCode);
-                }
             } else {
                 this.logger.printLine(PACKAGING_ERROR.string() + ": exit code: %d", exitCode);
             }
@@ -46,11 +46,7 @@ public class JarPackager implements  Packager{
         }
     }
 
-    private int removeClassesOutsideJar(String directory) throws Exception {
-        List<String> command = List.of("find", directory, "-name",
-                "*.class", "-type", "f", "-delete");
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        Process process = processBuilder.start();
-        return process.waitFor();
+    private void removeClassesOutsideJar(String directory) throws Exception {
+        (new Directory(new File(directory))).clearContent();
     }
 }

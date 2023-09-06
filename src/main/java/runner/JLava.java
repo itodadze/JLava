@@ -60,14 +60,14 @@ public class JLava {
 
     }
 
-    private static void setUp() throws Exception {
+    private static void setUp() {
         makeDirectory(JLAVA_DIRECTORY);
         makeDirectory(CACHE_DIRECTORY);
         makeDirectory(LOG_DIRECTORY);
     }
 
-    private static void makeDirectory(String path) throws Exception {
-        new Directory(new File(path)).make();
+    private static void makeDirectory(String path) {
+        new Directory(new File(path)).makeIfNotExists();
     }
 
 }
