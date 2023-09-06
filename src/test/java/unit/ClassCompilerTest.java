@@ -1,97 +1,128 @@
 package unit;
 
+import utility.Directory;
 import helper.StringLogger;
 import compiler.ClassCompiler;
-import compiler.FileGatherer;
+import utility.FileGatherer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ClassCompilerTest {
-
-    private static final String RES_PATH = "src/test/resources/compiler";
+    private static final String RES_PATH = Paths
+            .get("src", "test", "resources", "compiler").toString();
     private static final String INNER_OUTPUT_PATH = "compiler";
 
     @BeforeEach
     public void clearOutputDirectories() {
-        clearDirectoryContent(new File(RES_PATH + "/empty/output"));
-        clearDirectoryContent(new File(RES_PATH + "/unbranched/output"));
-        clearDirectoryContent(new File(RES_PATH + "/branched/output"));
+        try {
+            (new Directory(Paths.get(RES_PATH, "empty", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "unbranched", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "branched", "output").toFile())).clearContent();
+            (new Directory(Paths.get(RES_PATH, "dependency", "output").toFile())).clearContent();
+        } catch (Exception e) {
+            fail("Exception thrown when not expected");
+        }
     }
 
     @Test
     public void testCompilerEmptyDirectory() {
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of());
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("empty", List.of(),
+                List.of());
         assertNotNull(outputInnerFiles);
         assertEquals(0, outputInnerFiles.length);
     }
 
     @Test
     public void testCompilerUnbranchedDirectory() {
-        String srcDirectory = RES_PATH + "/unbranched/src";
-        String outputDirectory = RES_PATH + "/unbranched/output";
-        String outputInnerDirectory = outputDirectory + "/" + INNER_OUTPUT_PATH + "/unbranched/src";
-        List<String> expectedJavaFiles = List.of(srcDirectory + "/Class.java");
+        String srcDirectory = Paths.get(RES_PATH, "unbranched", "src").toString();
+        String outputDirectory = Paths.get(RES_PATH, "unbranched", "output").toString();
+        String outputInnerDirectory = Paths.get(outputDirectory, INNER_OUTPUT_PATH,
+                "unbranched", "src").toString();
+        List<String> expectedJavaFiles = List.of(Paths.get(srcDirectory,
+                "Class.java").toString());
 
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", expectedJavaFiles);
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("unbranched", List.of(),
+                expectedJavaFiles);
         assertNotNull(outputInnerFiles);
         assertEquals(1, outputInnerFiles.length);
 
-        assertTrue((new File(outputInnerDirectory + "/Class.class")).exists());
+        assertTrue((new File(Paths.get(outputInnerDirectory, "Class.class")
+                .toString())).exists());
     }
 
     @Test
     public void testCompilerBranchedDirectory() {
-        String srcDirectory = RES_PATH + "/branched/src";
-        String outputDirectory = RES_PATH + "/branched/output";
-        String outputInnerDirectory = outputDirectory + "/" + INNER_OUTPUT_PATH + "/branched/src";
+        String srcDirectory = Paths.get(RES_PATH, "branched", "src").toString();
+        String outputDirectory = Paths.get(RES_PATH, "branched", "output").toString();
+        String outputInnerDirectory = Paths.get(outputDirectory, INNER_OUTPUT_PATH,
+                "branched", "src").toString();
         List<String> expectedJavaFiles = List.of(
-                srcDirectory + "/dir1/Class1.java", srcDirectory + "/dir2/Class2.java"
+                Paths.get(srcDirectory, "dir1", "Class1.java").toString(),
+                Paths.get(srcDirectory, "dir2", "Class2.java").toString()
         );
 
-        File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", expectedJavaFiles);
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("branched", List.of(),
+                expectedJavaFiles);
         assertNotNull(outputInnerFiles);
         assertEquals(1, outputInnerFiles.length);
 
-        assertTrue((new File(outputInnerDirectory + "/dir1/Class1.class")).exists());
-        assertTrue((new File(outputInnerDirectory + "/dir2/Class2.class")).exists());
+        assertTrue((new File(Paths.get(outputInnerDirectory, "dir1",
+                "Class1.class").toString())).exists());
+        assertTrue((new File(Paths.get(outputInnerDirectory, "dir2",
+                "Class2.class").toString())).exists());
+    }
+
+    @Test
+    public void testCompilerWithDependencies() {
+        String srcDirectory = Paths.get(RES_PATH, "dependency", "src").toString();
+        String dependencyDirectory = Paths.get(RES_PATH, "dependency", "lib").toString();
+        List<String> dependencies = List.of(Paths.get(
+                dependencyDirectory, "commons-io-2.4.jar").toString());
+        List<String> expectedJavaFiles = List.of(
+                Paths.get(srcDirectory, "Class.java").toString());
+
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("dependency", dependencies,
+                expectedJavaFiles);
+
+        assertNotNull(outputInnerFiles);
+        assertEquals(1, outputInnerFiles.length);
+    }
+
+    @Test
+    public void testCompilerWithoutDependencies() {
+        String srcDirectory = Paths.get(RES_PATH, "lacking", "src").toString();
+        List<String> expectedJavaFiles = List.of(
+                Paths.get(srcDirectory, "Class.java").toString()
+        );
+
+        File[] outputInnerFiles = getCompiledInnerOutputFiles("lacking", List.of(),
+                expectedJavaFiles);
+
+        assertNotNull(outputInnerFiles);
+        assertEquals(0, outputInnerFiles.length);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private File[] getCompiledInnerOutputFiles(String directory, List<String> javaFiles) {
-        String srcDirectory = RES_PATH + "/" + directory + "/src";
-        String outputDirectory = RES_PATH + "/" + directory + "/output";
+    private File[] getCompiledInnerOutputFiles(String directory, List<String> dependencies,
+                                               List<String> javaFiles) {
+        String srcDirectory = Paths.get(RES_PATH, directory, "src").toString();
+        String outputDirectory = Paths.get(RES_PATH, directory, "output").toString();
         File outputDirFile = new File(outputDirectory);
         if (!outputDirFile.exists()) outputDirFile.mkdir();
         StringLogger logger = new StringLogger();
         FileGatherer fileGatherer = mock(FileGatherer.class);
 
-        when(fileGatherer.javaFilesFromSources(anyList())).thenReturn(javaFiles);
+        when(fileGatherer.filesFromSources(anyList())).thenReturn(javaFiles);
         ClassCompiler compiler = new ClassCompiler(logger, fileGatherer);
-        compiler.compileClasses(List.of(srcDirectory), outputDirectory);
+        compiler.compileClasses(List.of(srcDirectory), dependencies, outputDirectory);
         return outputDirFile.listFiles();
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void clearDirectoryContent(File directory) {
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        clearDirectoryContent(file);
-                    }
-                    file.delete();
-                }
-            } else {
-                directory.delete();
-            }
-        }
     }
 
 }
